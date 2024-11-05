@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= title %>
+    </title>
+    <link href="/assets/css/vendor.min.css" rel="stylesheet">
+    <link href="/assets/css/app.min.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="/assets/img/logo/favicon-48x48.png" sizes="48x48" />
+    <link rel="icon" type="image/svg+xml" href="/assets/img/logo/favicon.svg" />
+    <link rel="shortcut icon" href="/assets/img/logo/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/logo/apple-touch-icon.png" />
+    <link rel="manifest" href="/assets/img/logo/site.webmanifest" />
+
+    <!-- ================== BEGIN page-css ================== -->
+    <link href="/assets/plugins/datatables.net-bs5/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <link href="/assets/plugins/datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css" rel="stylesheet">
+    <link href="/assets/plugins/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css" rel="stylesheet">
+    <link href="/assets/plugins/bootstrap-table/dist/bootstrap-table.min.css" rel="stylesheet">
+    <!-- ================== END page-css ================== -->
+
+    <style>
+        @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap");
+
+        :root {
+            --bs-bg-color: #f7f5f0;
+            --bs-blue: #3459e6;
+            --bs-indigo: #6610f2;
+            --bs-purple: #6f42c1;
+            --bs-pink: #d63384;
+            --bs-red: #dc3545;
+            --bs-orange: #fd7e14;
+            --bs-yellow: #ffc107;
+            --bs-green: #198754;
+            --bs-teal: #20c997;
+            --bs-cyan: #0dcaf0;
+            --bs-black: #000;
+            --bs-white: #fff;
+            --bs-gray: #6c757d;
+            --bs-gray-dark: #343a40;
+            --bs-primary: #3459e6;
+            --bs-secondary: #6c757d;
+            --bs-success: #198754;
+            --bs-info: #0dcaf0;
+            --bs-warning: #ffc107;
+            --bs-danger: #dc3545;
+            --bs-light: #f8f9fa;
+            --bs-dark: #212529;
+            --gray-100: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-400: #ced4da;
+            --gray-500: #adb5bd;
+            --gray-600: #6c757d;
+            --gray-700: #495057;
+            --gray-800: #343a40;
+            --gray-900: #212529;
+        }
+
+        body {
+            font-family: "Inter";
+        }
+
+        li.instruction {
+            font-weight: bold;
+        }
+
+        li.instruction>div {
+            font-weight: normal;
+        }
+
+        /* CSS */
+        button.html5-qrcode-element {
+            appearance: button;
+
+            box-sizing: border-box;
+            color: #ffffff;
+            cursor: pointer;
+
+            font-size: 14px;
+            line-height: 1.15;
+            overflow: visible;
+            padding: 0.375rem 0.75rem;
+            position: relative;
+            text-align: center;
+            text-transform: none;
+            transition: all 80ms ease-in-out;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+            width: fit-content;
+        }
+
+        button.html5-qrcode-element:disabled {
+            opacity: 0.5;
+        }
+
+        button.html5-qrcode-element:focus {
+            outline: 0;
+        }
+
+        #html5-qrcode-button-camera-start:hover,
+        #html5-qrcode-button-camera-permission:hover {
+            background-color: #424649;
+            border-color: #373b3e;
+        }
+
+        #html5-qrcode-button-camera-start:active,
+        #html5-qrcode-button-camera-permission:active {
+            background-color: #4d5154;
+            border-color: #373b3e;
+        }
+
+        #html5-qrcode-button-camera-stop:hover {
+            background-color: #bb2d3b;
+            border-color: #dc3545;
+        }
+
+        #html5-qrcode-button-camera-stop:active {
+            background-color: #b02a37;
+            border-color: #a52834;
+        }
+
+        #html5-qrcode-button-camera-start,
+        #html5-qrcode-button-camera-permission {
+            background-color: var(--bs-gray-dark);
+            border: 1px solid var(--bs-gray-dark);
+            border-radius: 3px;
+        }
+
+        #html5-qrcode-button-camera-stop {
+            background-color: var(--bs-danger);
+            border: 1px solid var(--bs-danger);
+            border-radius: 3px;
+        }
+
+        .table thead th {
+            vertical-align: middle;
+            padding: 13px;
+            font-size: 15px;
+            color: #000;
+        }
+
+        .table tbody td {
+            padding: 16px;
+            font-size: 15px;
+            background: #fff;
+            vertical-align: middle;
+        }
+
+
+
+        .radio-tile-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .input-container {
+            position: relative;
+            height: 6rem;
+            width: 6rem;
+            margin: 0.5rem;
+            border: 1px solid var(--bs-gray);
+            border-radius: 3px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Make actual radio input invisible and stretch it */
+        .radio-button {
+            opacity: 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        /* Default tile styles */
+        .radio-tile {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            border-radius: 3px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .radio-tile-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        /* Active tile styles */
+        .radio-button:checked+.radio-tile {
+            background-color: var(--bs-yellow);
+            color: var(--bs-blue);
+        }
+
+        #barcodeData {
+            opacity: 1
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar" style="background-color: #0c4b05">
+        <div class="container-lg">
+            <a class="navbar-brand text-white" href="#">
+                <img src="/assets/img/logo.png" alt="Logo" width="30" height="24" class="d-inline-block align-text-top">
+                Attendance
+            </a>
+
+            <div class="d-flex">
+                <a class="btn btn-white" href="/signin"><i class="fas fa-lg fa-fw me-2 fa-sign-in-alt"></i> Sign in</a>
+            </div>
+        </div>
+    </nav>
+    <main id="main">
+
+        <div class="container-lg">
+
+
+            <div class="page-content pt-3">
+
+                <div class="card">
+                    <div class="card-header fw-bold small d-flex">
+                        <span class="flex-grow-1"></span>
+                        <a href="#" data-toggle="card-expand" class="text-body text-opacity-50 text-decoration-none"><i
+                                class="fa fa-fw fa-expand"></i> Expand</a>
+                    </div>
+                    <div class="card-body">
+                        <div class="row gx-4 justify-content-center">
+
+
+                            <div class="col-lg-8">
+                                <div class="time-container">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <!-- Large Time Display -->
+                                        <div class="text-center flex-grow-1">
+                                            <div id="time" class="display-4 text-blue-700 fw-bold"></div>
+                                        </div>
+                                        <!-- Date Display -->
+                                        <h3 id="dynamicDate" class="fw-bold ms-4"></h3>
+                                    </div>
+
+                                </div>
+
+                                <div class="table-responsive">
+
+                                    <!-- Table of Attendance -->
+                                    <table class="table table-bordered attendance-table" id="attendanceTable">
+                                        <thead class="thead-dark ">
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Name</th>
+                                                <th>In AM</th>
+                                                <th>Out AM</th>
+                                                <th>In PM</th>
+                                                <th>Out PM</th>
+                                            </tr>
+                                        </thead>
+
+                                    </table>
+                                </div>
+
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="text-center ">
+
+
+                                    <div id="cameraScanner" class="d-none">
+                                        <h4>Camera Scanner</h4>
+                                        <div class="d-flex justify-content-center">
+                                            <div id="reader" class="" style="width: 250px;"></div>
+                                        </div>
+
+                                    </div>
+
+                                    <div id="barcodeReader" class="d-none">
+                                        <h4>Barcode Reader</h4>
+                                        <img src="/images/barcodescanner.png" alt="" class="img-fluid" width="200"
+                                            height="200">
+                                        <input type="text" id="barcodeData" maxlength="9" minlength="9"
+                                            class="form-control text-center" placeholder="Scan or Type Barcode">
+                                    </div>
+                                </div>
+                                <div class="option-scanner text-center">
+                                    <h5>Select Method</h5>
+                                    <div class="d-flex justify-content-center">
+                                        <button id="cameraOption" class="btn btn-primary btn-sm me-2">Use
+                                            Camera</button>
+                                        <button id="barcodeReaderOption" class="btn btn-secondary btn-sm">Use Barcode
+                                            Reader</button>
+                                    </div>
+                                </div>
+
+
+                                <div class="">
+                                    <h3 class="text-center">Attendance Type</h3>
+                                    <div class="radio-tile-group">
+                                        <div class="input-container">
+                                            <input id="present" class="radio-button" type="radio" name="attendance"
+                                                value="Present" />
+                                            <div class="radio-tile">
+                                                <label for="present" class="radio-tile-label">Present</label>
+                                            </div>
+                                        </div>
+                                        <div class="input-container">
+                                            <input id="absent" class="radio-button" type="radio" name="attendance"
+                                                value="Absent" />
+                                            <div class="radio-tile">
+                                                <label for="absent" class="radio-tile-label">Absent</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                   
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="/assets/js/vendor.min.js"></script>
+    <script src="/assets/js/app.min.js"></script>
+    <!-- ================== BEGIN page-js ================== -->
+    <script src="/assets/js/html5-qrcode.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+    <script src="/assets/js/jquery.min.js"></script>
+    <script src="/assets/plugins/datatables.net/js/dataTables.min.js"></script>
+    <script src="/assets/plugins/datatables.net-bs5/js/dataTables.bootstrap5.min.js"></script>
+    <script src="/assets/plugins/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="/assets/plugins/datatables.net-buttons/js/buttons.colVis.min.js"></script>
+    <script src="/assets/plugins/datatables.net-buttons/js/buttons.html5.min.js"></script>
+    <script src="/assets/plugins/datatables.net-buttons/js/buttons.print.min.js"></script>
+    <script src="/assets/plugins/datatables.net-buttons-bs5/js/buttons.bootstrap5.min.js"></script>
+    <script src="/assets/plugins/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="/assets/plugins/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js"></script>
+    <script src="/assets/plugins/bootstrap-table/dist/bootstrap-table.min.js"></script>
+    <script src="/assets/js/demo/table-plugins.demo.js"></script>
+    <script src="/assets/js/demo/sidebar-scrollspy.demo.js"></script>
+    <!-- ================== END page-js ================== -->
+    <script>
+        var table = $("#attendanceTable").DataTable({
+
+            processing: true,
+
+
+            ajax: {
+                url: "/attendance/all",
+                type: "GET",
+
+            },
+            columns: [
+                { 'data': 'id' },
+                { 'data': 'name' },
+                { 'data': 'time_in_am' },
+                { 'data': 'time_out_am' },
+                { 'data': 'time_in_pm' },
+                { 'data': 'time_out_pm' },
+
+
+
+            ]
+        });
+
+    </script>
+
+
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const updateTime = () => {
+                const now = new Date();
+                document.getElementById("time").innerHTML = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true });
+                document.getElementById('dynamicDate').innerHTML = now.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+            };
+            updateTime();
+            setInterval(updateTime, 1000);
+        });
+
+    </script>
+    <script type="text/javascript">
+        // Variables for storing attendance type and last scan result
+        let attendance_type = "";
+        let lastResult = "";
+
+        // Select all radio buttons for attendance and set the attendance type on change
+        const radios = document.querySelectorAll('input[type=radio][name="attendance"]');
+        radios.forEach(radio => radio.addEventListener('change', () => {
+            attendance_type = radio.value
+            document.getElementById('barcodeData').focus();
+        }));
+
+        // SweetAlert configuration for toasts
+        const Toast = Swal.mixin({
+            showClass: { icon: '' }, // Disable popup animation
+            toast: true,
+            position: 'top',
+            showConfirmButton: false,
+            timer: 3000,
+        });
+
+        // QR Code scanner configuration
+        const qrboxFunction = (viewfinderWidth, viewfinderHeight) => {
+            let minEdgePercentage = 0.8; // 80%
+            let minEdgeSize = Math.min(viewfinderWidth, viewfinderHeight);
+            return { width: Math.floor(minEdgeSize * minEdgePercentage), height: Math.floor(minEdgeSize * minEdgePercentage) };
+        };
+
+        let config = {
+            qrbox: qrboxFunction,
+            fps: 15,
+            rememberLastUsedCamera: true,
+            aspectRatio: 1.0,
+            supportedScanTypes: [0],
+        };
+
+        // Function called on successful QR code scan
+        function scanSuccess(decodedText) {
+            if (decodedText !== lastResult) {
+                lastResult = decodedText;
+
+                fetch(`/attendance/`, {
+                    method: "POST",
+                    body: JSON.stringify({ barcode: lastResult, attendance_type }),
+                    headers: { "Content-Type": "application/json" },
+                })
+                    .then(res => res.json())
+                    .then(response => {
+                        if (response.status === "error") {
+                            Toast.fire({ icon: 'error', title: response.msg });
+                        } else if (response.status === "success") {
+                            table.ajax.reload(null, false);
+                            Toast.fire({ icon: 'success', title: response.msg});
+
+                        }
+                    })
+                    .finally(() => setTimeout(() => lastResult = "", 3000)); // Reset lastResult after 3 seconds
+            }
+        }
+
+        // Initialize QR code scanner
+        const html5QrcodeScanner = new Html5QrcodeScanner("reader", config, false);
+
+        // Barcode reader functionality and option switching
+        $(document).ready(function () {
+            const barcodeData = $('#barcodeData');
+
+            // Auto-focus barcode input on mouse move
+            $('body').mousemove(() => barcodeData.focus());
+
+            // Handle barcode input when it reaches 9 characters
+            barcodeData.on('input', () => {
+                if (barcodeData.val().length === 9) {
+                    const dataToSend = { barcode: barcodeData.val(), attendance_type };
+
+
+                    fetch('/attendance', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(dataToSend),
+                    })
+                        .then(res => res.json())
+                        .then(response => {
+
+                            if (response.status === "error") {
+                                Toast.fire({ icon: 'error', title: response.msg });
+                            } else if (response.status === "success") {
+                                table.ajax.reload(null, false);
+                                Toast.fire({ icon: 'success', title:  response.msg });
+
+                            }
+                            barcodeData.val(''); // Clear input again in case of successful data handling
+                        }).finally(() => barcodeData.val(''));
+
+                }
+            });
+
+            // Handle camera option click
+            $('#cameraOption').on('click', function () {
+                $('#cameraScanner').removeClass('d-none').show(); // Show camera scanner
+                $('#barcodeReader').hide(); // Hide barcode reader
+                barcodeData.blur(); // Unfocus barcode input
+                html5QrcodeScanner.render(scanSuccess); // Start camera scanner
+            });
+
+            // Handle barcode reader option click
+            $('#barcodeReaderOption').on('click', function () {
+                $('#barcodeReader').removeClass('d-none').show(); // Show barcode reader
+                $('#cameraScanner').hide(); // Hide camera scanner
+                barcodeData.focus(); // Focus barcode input
+                html5QrcodeScanner.clear(); // Stop camera scanner
+            });
+        });
+    </script>
+
+
+
+
+
+</body>
+
+</html>

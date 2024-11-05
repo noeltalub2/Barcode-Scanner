@@ -1,0 +1,229 @@
+<% layout('./Layout/layout.ejs') -%>
+
+    <div id="content" class="app-content">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/faculty/profile">Profile</a></li>
+        </ol>
+        <h1 class="page-header">
+            Profile <small>overview &amp; actions</small>
+        </h1>
+
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-body">
+
+                        <form action="" class="edit-faculty-validation">
+                            <input type="hidden" name="id" value="<%=faculty.id%>" id="id" >
+                            <div class="mb-2">
+                                <label for="edit-name" class="form-label">Faculty Name</label>
+                                <input class="form-control" type="text" name="name" value="<%=faculty.name%>"  required>
+                            </div>
+                            <div class="mb-2">
+                                <label for="edit-username" class="form-label">Username</label>
+                                <input class="form-control" type="text" name="username" value="<%=faculty.username%>" id="username" required>
+                            </div>
+                            <div class="mb-2">
+                                <label for="edit-email" class="form-label">Email</label>
+                                <input class="form-control" type="email" name="email"  value="<%=faculty.email%>" id="email" required>
+                            </div>
+                            <div class="mb-2">
+                                <label for="edit-password" class="form-label">New Password (Optional)</label>
+                                <input class="form-control" type="password" name="password" id="password"  required>
+                            </div>
+                            <div class="mb-2">
+                                <label for="edit-confirm-password" class="form-label">Confirm Password</label>
+                                <input class="form-control" type="password" id="confirm_password" name="confirm_password"
+                                  required>
+                            </div>
+
+
+
+                            <button type="submit" class="btn btn-primary" id="submit-button">Update <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span></button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        !(function () {
+            "use strict";
+            class e {
+                static initValidation() {
+                    // Initialize jQuery validation for faculty
+                    jQuery(".edit-faculty-validation").validate({
+                        rules: {
+                            name: {
+                                required: true,
+                                minlength: 2,
+                            },
+                            username: {
+                                required: true,
+                                minlength: 3,
+                                remote: {
+                                    url: "/faculty/availability",
+                                    type: "POST",
+                                    data: {
+                                        id: function () {
+                                            return $("#id").val();
+                                        },
+                                        field: "username",
+                                        value: function () {
+                                            return $("#username").val();
+                                        },
+                                        user: "faculty",
+                                    },
+                                    dataType: "json",
+                                    async: true,
+                                    dataFilter: function (response) {
+                                        var json = JSON.parse(response);
+                                        return json.available ? "true" : "false";
+                                    },
+                                },
+                            },
+                            email: {
+                                required: true,
+                                email: true,
+                                remote: {
+                                    url: "/faculty/availability",
+                                    type: "POST",
+                                    data: {
+                                        id: function () {
+                                            return $("#id").val();
+                                        },
+                                        field: "email",
+                                        value: function () {
+                                            return $("#email").val();
+                                        },
+                                        user: "faculty",
+                                    },
+                                    dataType: "json",
+                                    async: true,
+                                    dataFilter: function (response) {
+                                        var json = JSON.parse(response);
+                                        return json.available ? "true" : "false";
+                                    },
+                                },
+                            },
+                            password: {
+                                required: false,
+                                minlength: 6,
+                            },
+                            confirm_password: {
+                                required: false,
+                                equalTo: "#password",
+                            },
+                        },
+                        messages: {
+                            name: {
+                                required: "Please enter the name",
+                                minlength:
+                                    "The name must consist of at least 2 characters",
+                            },
+                            username: {
+                                required: "Please enter a username",
+                                minlength:
+                                    "The username must consist of at least 3 characters",
+                                remote: "This username is not available",
+                            },
+                            email: {
+                                required: "Please enter the email address",
+                                email: "Please enter a valid email address",
+                                remote: "This email is already registered",
+                            },
+                            password: {
+                                required: "Please provide a password",
+                                minlength:
+                                    "Your password must be at least 6 characters long",
+                            },
+                            confirm_password: {
+                                required: "Please confirm your password",
+                                equalTo: "Passwords do not match",
+                            },
+                        },
+                        submitHandler: function (form) {
+                            const submitButton =
+                                document.getElementById("submit-button");
+                            const spinner =
+                                submitButton.querySelector(".spinner-border");
+                            // Show spinner and disable button
+                            spinner.style.display = "inline-block";
+                            submitButton.disabled = true;
+                            submitButton.innerHTML =
+                                '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>Updating...';
+
+                            const formData = new FormData(form); // Collect form data
+
+                            fetch("/faculty/profile", {
+                                method: "POST",
+                                body: formData,
+                            })
+                                .then((response) => response.json())
+                                .then((data) => {
+                                    spinner.style.display = "none";
+                                    submitButton.disabled = false;
+                                    submitButton.innerHTML =
+                                        'Update <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>';
+                                    if (data.success) {
+                                       
+                                        $.notify(
+                                            {
+                                                type: "success",
+                                                icon: "fa fa-check me-1",
+                                                message: data.message,
+                                            },
+                                            {
+                                                type: "success",
+                                                allow_dismiss: false,
+                                            }
+                                        );
+                                       
+                                    } else {
+                                        $.notify(
+                                            {
+                                                type: "danger",
+                                                icon: "fa fa-times-circle me-1",
+                                                message: data.message,
+                                            },
+                                            {
+                                                type: "danger",
+                                                allow_dismiss: false,
+                                            }
+                                        );
+                                    }
+                                })
+                                .catch((error) => {
+                                    spinner.style.display = "none";
+                                    submitButton.disabled = false;
+                                    submitButton.innerHTML =
+                                        'Update <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>';
+                                    $.notify(
+                                        {
+                                            type: "danger",
+                                            icon: "fa fa-times-circle me-1",
+                                            message:
+                                                "An error occurred. Please try again.",
+                                        },
+                                        {
+                                            type: "danger",
+                                            allow_dismiss: false,
+                                        }
+                                    );
+                                    console.error("Error:", error);
+                                });
+                        },
+                    });
+                }
+
+                static init() {
+                    this.initValidation();
+                }
+            }
+
+            // Call init function on document ready
+            $(document).ready(() => e.init());
+        })();
+
+    </script>

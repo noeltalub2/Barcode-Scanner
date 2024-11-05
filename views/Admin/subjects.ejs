@@ -1,0 +1,234 @@
+<% layout('./Layout/layout.ejs') -%>
+
+<div id="content" class="app-content">
+    <div class="d-flex align-items-center mb-md-3 mb-2">
+        <div class="flex-fill">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/admin/subjects">MANAGE SUBJECTS</a></li>
+            </ol>
+            <h1 class="page-header">
+                Manage Subjects <small>overview &amp; actions</small>
+            </h1>
+        </div>
+        <div class="ms-auto">
+            <button type="button" class="btn btn-theme" data-bs-toggle="modal" data-bs-target="#addSubject">
+                <i class="fa fa-plus-circle me-1"></i> Add Subject
+            </button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <!-- Table of Subjects -->
+                        <table class="table table-bordered" id="subjectTable">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Subject Name</th>
+                                    <th>Subject Code</th>
+                                    <th>Description</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Adding Subject -->
+    <div class="modal fade" id="addSubject" tabindex="-1" aria-labelledby="addSubjectLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form class="add-subject-validation" method="POST">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="addSubjectLabel">Add New Subject</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-2">
+                            <label for="subjectName" class="form-label">Subject Name</label>
+                            <input class="form-control" type="text" name="subject_name" id="subjectName" required autofocus>
+                        </div>
+                        <div class="mb-2">
+                            <label for="subjectCode" class="form-label">Subject Code</label>
+                            <input class="form-control" type="text" name="subject_code" id="subjectCode" required>
+                        </div>
+                        <div class="mb-2">
+                            <label for="subjectDescription" class="form-label">Description</label>
+                            <textarea class="form-control" name="description" id="subjectDescription" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" id="submit-button">Insert
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Editing Subject -->
+    <div class="modal fade" id="editSubject" tabindex="-1" aria-labelledby="editSubjectLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form class="edit-subject-validation" method="POST">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="editSubjectLabel">Edit Subject</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="subject_id" id="edit-subject-id">
+                        <div class="mb-2">
+                            <label for="edit-subject-name" class="form-label">Subject Name</label>
+                            <input class="form-control" type="text" name="subject_name" id="edit-subject-name" required>
+                        </div>
+                        <div class="mb-2">
+                            <label for="edit-subject-code" class="form-label">Subject Code</label>
+                            <input class="form-control" type="text" name="subject_code" id="edit-subject-code" required>
+                        </div>
+                        <div class="mb-2">
+                            <label for="edit-subject-description" class="form-label">Description</label>
+                            <textarea class="form-control" name="description" id="edit-subject-description" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" id="edit-submit-button">Save Changes</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Deleting Subject -->
+    <div class="modal fade" id="modal-delete-subject" tabindex="-1" aria-labelledby="modal-delete-subject" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="deleteSubjectForm" action="/admin/subjects/delete" method="POST">
+                    <input type="hidden" name="id" id="delete-subject-id">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Delete Subject</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to delete the subject <span id="delete_subject_name" class="fw-bold"></span>?</p>
+                        <div class="alert alert-danger d-flex align-items-center" role="alert">
+                            <i class="fa fa-exclamation-triangle me-2"></i>
+                            <div>
+                                <strong>Note:</strong> Deleting this will also delete all associated records.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Function to delete subject by ID
+    function deleteSubjectById(name, id) {
+        document.getElementById("delete_subject_name").innerText = name;
+        document.getElementById("delete-subject-id").value = id;
+
+        const modal = new bootstrap.Modal(document.getElementById("modal-delete-subject"));
+        modal.show();
+    }
+
+    document.getElementById("deleteSubjectForm").addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const id = document.getElementById("delete-subject-id").value;
+
+        try {
+            const response = await fetch("/admin/subjects/delete", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ id }),
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                const modal = bootstrap.Modal.getInstance(document.getElementById("modal-delete-subject"));
+                modal.hide();
+
+                $.notify({
+                    icon: "fa fa-check me-1",
+                    message: "Subject deleted successfully!",
+                }, {
+                    type: "success",
+                    allow_dismiss: false,
+                });
+                table.ajax.reload(null, false);
+            } else {
+                $.notify({
+                    icon: "fa fa-times-circle me-1",
+                    message: "There was an error!",
+                }, {
+                    type: "danger",
+                    allow_dismiss: false,
+                });
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            }
+        } catch (error) {
+            $.notify({
+                icon: "fa fa-times-circle me-1",
+                message: "An error occurred. Please try again.",
+            }, {
+                type: "danger",
+            });
+            console.error("Error:", error);
+        }
+    });
+
+    // DataTable for subjects
+    var table = $("#subjectTable").DataTable({
+        processing: true,
+        ajax: {
+            url: "/admin/subjects/all",
+            type: "GET",
+        },
+        columns: [
+            { 'data': 'id' },
+            { 'data': 'subject_name' },
+            { 'data': 'subject_code' },
+            { 'data': 'description' },
+            {
+                'data': null,
+                'render': function (data) {
+                    return `<div class="text-center">
+                        <div class="btn-group">
+                            <button type="button" onclick="editSubjectById('${data.subject_id}', '${data.subject_name}', '${data.subject_code}', '${data.description}')" class="btn btn-default" data-bs-toggle="modal" data-bs-target="#editSubject">     <i class="fas fa-fw fa-edit"></i> </button>
+                            <button type="button" onclick="deleteSubjectById('${data.subject_name}', '${data.subject_id}')" class="btn btn-default">  <i class="fas fa-fw fa-trash-alt"></i></button>
+                        </div>
+                    </div>`;
+                },
+            },
+        ],
+    });
+
+    // Edit subject function
+    function editSubjectById(id, name, code, description) {
+        document.getElementById("edit-subject-id").value = id;
+        document.getElementById("edit-subject-name").value = name;
+        document.getElementById("edit-subject-code").value = code;
+        document.getElementById("edit-subject-description").value = description;
+    }
+
+    
+</script>

@@ -1,0 +1,364 @@
+<% layout('./Layout/layout.ejs') -%>
+
+    <div id="content" class="app-content">
+
+        <div class="d-flex align-items-center mb-md-3 mb-2">
+            <div class="flex-fill">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/faculty/student">MANAGE STUDENT</a></li>
+
+                </ol>
+                <h1 class="page-header">
+                    Manage Student <small>overview &amp; actions</small>
+                </h1>
+            </div>
+            <div class="ms-auto">
+
+
+
+                <button type="button" class="btn btn-theme" data-bs-toggle="modal" data-bs-target="#addUser">
+                    <i class="fa fa-plus-circle me-1"></i> Add Student
+                </button>
+            </div>
+        </div>
+        <div class="row">
+           <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+
+                        <!-- Table of Attendance -->
+                        <table class="table table-bordered" id="studentTable">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Student Number</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Degree</th>
+                                    <th>Year / Section</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+           </div>
+
+        </div>
+        <!-- Modal -->
+        <div class="modal fade" id="addUser" tabindex="-1" aria-labelledby="addUser" aria-hidden="true">
+            <div class="modal-dialog ">
+
+
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="addUser">Add New Student</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <!-- Choice for Single Data or Excel Upload -->
+                            <div class="col-12 mb-3">
+                                <div class="text-center">
+                                    <div class="btn-group" role="group" aria-label="Input Method">
+                                        <input type="radio" class="btn-check" name="inputOption" id="singleDataOption" value="single" autocomplete="off" checked>
+                                        <label class="btn btn-outline-primary" for="singleDataOption">Single Data</label>
+                                
+                                        <input type="radio" class="btn-check" name="inputOption" id="excelUploadOption" value="excel" autocomplete="off">
+                                        <label class="btn btn-outline-primary" for="excelUploadOption">Upload Excel (Multiple Data)</label>
+                                    </div>
+                                </div>
+                          
+                            </div>
+                    
+                            <!-- Single Data Form -->
+                            <div class="col-lg-12" id="singleDataForm">
+                                <form class="add-student-validation" method="POST">
+                            
+                                    <div class="mb-2">
+                                        <label for="student_id" class="form-label">Student ID</label>
+                                        <input class="form-control" type="text" name="student_id" id="student_id" autofocus required>
+                                    </div>
+                    
+                                    <div class="mb-2">
+                                        <label for="name" class="form-label">Student Name</label>
+                                        <input class="form-control" type="text" name="name" id="name" required>
+                                    </div>
+                    
+                                    <div class="mb-2">
+                                        <label for="email" class="form-label">Email</label>
+                                        <input class="form-control" type="text" name="email" id="email" required>
+                                    </div>
+                    
+                                    <div class="mb-2">
+                                        <label for="degree" class="form-label">Degree</label>
+                                        <input class="form-control" type="text" name="degree" id="degree" required>
+                                    </div>
+                    
+                                    <div class="mb-2">
+                                        <label for="year_section" class="form-label">Year & Section</label>
+                                        <input class="form-control" type="text" name="year_section" id="year_section" required minlength="3" maxlength="3">
+                                    </div>
+                    
+                                    <button type="submit" class="btn btn-primary" id="submit-button">Insert 
+                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+                                    </button>
+                                </form>
+                            </div>
+                    
+                            <!-- Excel Upload Form (hidden by default) -->
+                            <div class="col-lg-12" id="excelUploadForm" style="display: none;">
+                                <div class="excel-container">
+                               
+                                    <div class="excel-img-container text-center mt-2">
+                                        <img src="/images/excel.png" alt="" class="img-fluid mx-auto d-block">
+                                        <small class="fst-italic">Example of Excel Format</small>
+                                    </div>
+                    
+                                    <div class="excel-form mt-3">
+                                        <form action="/admin/upload_excel" enctype="multipart/form-data" method="post" id="uploadExcelForm">
+                                            <input type="file" name="import-excel" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" class="form-control" required>
+                                            <div id="error-upload-message" class="mt-2"></div>
+                                            <button type="submit" class="btn btn-success mt-2" id="upload-button">
+                                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span> Upload
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="modal fade" id="modal-delete" tabindex="-1" aria-labelledby="modal-delete" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form id="deleteForm" action="/faculty/delete/" method="POST">
+                        <input type="hidden" name="id" id="delete-id">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Delete Student</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Are you sure you want to delete the <span id="delete_name" class="fw-bold"></span>
+                                ?</p>
+                            <div class="alert alert-danger d-flex align-items-center" role="alert">
+                                <i class="fa fa-exclamation-triangle me-2"></i>
+                                <div>
+                                    <strong>Note:</strong> Deleting this will also delete all attendance records.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+    const singleDataOption = document.getElementById("singleDataOption");
+    const excelUploadOption = document.getElementById("excelUploadOption");
+
+    const singleDataForm = document.getElementById("singleDataForm");
+    const excelUploadForm = document.getElementById("excelUploadForm");
+
+    // Toggle forms based on selected option
+    singleDataOption.addEventListener("change", function () {
+        if (this.checked) {
+            singleDataForm.style.display = "block";
+            excelUploadForm.style.display = "none";
+        }
+    });
+
+    excelUploadOption.addEventListener("change", function () {
+        if (this.checked) {
+            singleDataForm.style.display = "none";
+            excelUploadForm.style.display = "block";
+        }
+    });
+});
+
+    </script>
+    <script>
+        function deleteById(name, id) {
+            document.getElementById("delete_name").innerText = id;
+            document.getElementById("delete-id").value = name;
+
+            // Show the modal using Bootstrap 5 API
+            const modal = new bootstrap.Modal(
+                document.getElementById("modal-delete")
+            );
+            modal.show();
+        }
+
+        document
+            .getElementById("deleteForm")
+            .addEventListener("submit", async function (event) {
+                event.preventDefault(); // Prevent the form from submitting the traditional way
+
+                const id = document.getElementById(
+                    "delete-id"
+                ).value;
+
+                try {
+                    const response = await fetch("/admin/student/delete", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ student_id: id }),
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        // Close the modal
+                        const modal = bootstrap.Modal.getInstance(
+                            document.getElementById("modal-delete")
+                        );
+                        modal.hide();
+
+                        $.notify(
+                            {
+                                icon: "fa fa-check me-1",
+                                message: "Student deleted successfully!",
+                            },
+                            {
+                                type: "success",
+                                allow_dismiss: false,
+                            }
+                        );
+                        table.ajax.reload(null, false);
+                    } else {
+                        $.notify(
+                            {
+                                icon: "fa fa-check me-1",
+                                message: "There was an error!",
+                            },
+                            {
+                                type: "danger",
+                                allow_dismiss: false,
+                            }
+                        );
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 2000);
+                    }
+                } catch (error) {
+                    $.notify(
+                        {
+                            icon: "fa fa-times-circle me-1",
+                            message: "An error occurred. Please try again.",
+                        },
+                        {
+                            type: "danger",
+                        }
+                    );
+                    console.error("Error:", error);
+                }
+            });
+    </script>
+    <script>
+        var table = $("#studentTable").DataTable({
+            processing: true,
+
+            ajax: {
+                url: "/faculty/student/all",
+                type: "GET",
+
+            },
+            columns: [
+                { 'data': 'id' },
+                { 'data': 'student_id' },
+                { 'data': 'name' },
+                { 'data': 'email' },
+                { 'data': 'degree' },
+                { 'data': 'year_section' },
+                {
+                    'data': null, 'render': function (data) {
+                        return `<div class="btn-group">
+                                                    <a href="/admin/student/${data.student_id}" class="btn btn-default"><i class="fas fa-fw fa-eye"></i></a>
+                                                    <button type="button" onclick="deleteById('${data.student_id}','${data.name}')" class="btn btn-default"><i class="fas fa-fw fa-trash-alt"></i></button>
+                                                    
+                                                </div>`
+                    }
+                },
+
+            ]
+        });
+    </script>
+    <script>
+        document
+            .getElementById("uploadExcelForm")
+            .addEventListener("submit", async function (event) {
+                event.preventDefault(); // Prevent the form from submitting the traditional way
+                const submitButton = document.getElementById("upload-button");
+                const spinner = submitButton.querySelector(".spinner-border");
+                const errorMessageDiv = document.getElementById("error-upload-message");
+                // Show spinner and disable button
+                spinner.style.display = "inline-block";
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>Uploading...';
+                const form = event.target;
+                const formData = new FormData(form);
+                try {
+                    const response = await fetch("/faculty/upload_excel", {
+                        method: "POST",
+                        body: formData,
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        // Close the modal
+                        const modal = bootstrap.Modal.getInstance(
+                            document.getElementById("addUser")
+                        );
+                        modal.hide();
+
+                        $.notify({
+                            type: "success",
+                            icon: "fa fa-check me-1",
+                            message: data.message,
+                        }, {
+                            type: "success",
+                            allow_dismiss: false,
+                        });
+                        table.ajax.reload(null, false);
+                    } else {
+                        errorMessageDiv.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
+                     
+                    }
+                } catch (error) {
+                    $.notify(
+                        {
+                            icon: "fa fa-times-circle me-1",
+                            message: "An error occurred. Please try again.",
+                        },
+                        {
+                            type: "danger",
+                        }
+                    );
+                    console.error("Error:", error);
+                } finally {
+                    spinner.style.display = "none";
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true" style="display: none;"></span>Upload';
+                }
+            });
+    </script>

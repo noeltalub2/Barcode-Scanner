@@ -1,0 +1,231 @@
+<% layout('./Layout/layout.ejs') -%>
+
+    <div id="content" class="app-content">
+
+
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/admin/settings">SETTINGS</a></li>
+        </ol>
+        <h1 class="page-header">
+            Settings <small>overview</small>
+        </h1>
+
+
+
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-body">
+                        <form action="" method="POST" class="changePasswordForm">
+                            <input type="hidden" name="id" id="id" value="<%=userId%>">
+                            <div class="mb-3">
+                                <label for="currentPassword" class="form-label">Current Password</label>
+                                <input type="password" name="currentPassword" id="currentPassword" class="form-control"
+                                    required>
+                            </div>
+                            <div class="mb-2">
+                                <label for="password" class="form-label">Password</label>
+                                <input class="form-control" type="password" name="password" id="password" required>
+                            </div>
+                            <div class="mb-2">
+                                <label for="confirm_password" class="form-label">Confirm Password</label>
+                                <input class="form-control" type="password" name="confirm_password"
+                                    id="confirm_password" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary" id="submit-button">Update
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
+                                    style="display: none;"></span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Backup Data</h5>
+                        <div class="backup mb-3">
+                            <strong>Backup this database</strong>
+                            <p class="mb-1">
+                                Create a copy of data that can be recovered in the event of a data failure</p>
+                            <a href="/admin/backup_sql" class="btn btn-success">
+                                Backup Database
+                            </a>
+                        </div>
+
+                        <h5 class="card-title mt-4">Delete Database</h5>
+                        <div class="backup mb-3">
+                            <strong>Permanently Delete this database</strong>
+                            <p class="mb-1">
+                                Warning: This action is irreversible. Deleting the database will permanently erase all
+                                data.</p>
+                            <a href="javascript:void(0);" id="deleteDatabaseBtn" class="btn btn-danger">Delete
+                                Database</a>
+                        </div>
+                    </div>
+
+
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <script src="/assets/js/sweetalert.js"></script>
+    <script>
+        !(function () {
+            "use strict";
+            class e {
+                static initValidation() {
+                    // Initialize jQuery validation for faculty
+                    jQuery(".changePasswordForm").validate({
+                        rules: {
+                            currentPassword: {
+                                required: true,
+
+                            },
+                            password: {
+                                required: true,
+                                minlength: 6,
+                            },
+                            confirm_password: {
+                                required: true,
+                                equalTo: "#password",
+                            },
+                        },
+                        messages: {
+                            password: {
+                                required: "Please provide old password",
+
+                            },
+                            password: {
+                                required: "Please provide a new password",
+                                minlength: "Your password must be at least 6 characters long",
+                            },
+                            confirm_password: {
+                                required: "Please confirm your password",
+                                equalTo: "Passwords do not match",
+                            },
+                        },
+                        submitHandler: function (form) {
+                            const submitButton = document.getElementById("submit-button");
+                            const spinner = submitButton.querySelector(".spinner-border");
+                            // Show spinner and disable button
+                            spinner.style.display = "inline-block";
+                            submitButton.disabled = true;
+                            submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>Updating...';
+
+                            const formData = new FormData(form); // Collect form data
+
+                            fetch("/admin/changepassword", {
+                                method: "POST",
+                                body: formData,
+                            })
+                                .then((response) => response.json())
+                                .then((data) => {
+                                    spinner.style.display = "none";
+                                    submitButton.disabled = false;
+                                    submitButton.innerHTML = 'Update <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>';
+                                    if (data.success) {
+
+                                        $.notify({
+                                            type: "success",
+                                            icon: "fa fa-check me-1",
+                                            message: data.message,
+                                        }, {
+                                            type: "success",
+                                            allow_dismiss: false,
+                                        });
+                                        form.reset(); // Reset the form
+
+                                    } else {
+                                        $.notify({
+                                            type: "danger",
+                                            icon: "fa fa-times-circle me-1",
+                                            message: data.message,
+                                        }, {
+                                            type: "danger",
+                                            allow_dismiss: false,
+                                        });
+                                    }
+                                })
+                                .catch((error) => {
+                                    spinner.style.display = "none";
+                                    submitButton.disabled = false;
+                                    submitButton.innerHTML = 'Insert <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>';
+                                    $.notify({
+                                        type: "danger",
+                                        icon: "fa fa-times-circle me-1",
+                                        message: "An error occurred. Please try again.",
+                                    }, {
+                                        type: "danger",
+                                        allow_dismiss: false,
+                                    });
+                                    console.error("Error:", error);
+                                });
+                        },
+                    });
+                }
+
+                static init() {
+                    this.initValidation();
+                }
+            }
+
+            // Call init function on document ready
+            $(document).ready(() => e.init());
+        })();
+
+    </script>
+<script>
+    document.getElementById('deleteDatabaseBtn').addEventListener('click', function () {
+        Swal.fire({
+            title: 'Enter Password',
+            input: 'password',
+            inputLabel: 'Enter your password to confirm deletion',
+            inputPlaceholder: 'Enter your password',
+            showCancelButton: true,
+            confirmButtonText: 'Delete',
+            showLoaderOnConfirm: true,
+            preConfirm: (password) => {
+                return fetch('/admin/delete_sql', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ password: password })
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(response.statusText);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Handle success and failure
+                        if (!data.success) {
+                            // If the operation was not successful, show the error message
+                            Swal.showValidationMessage(data.message);
+                            return false; // Prevent closing the dialog
+                        }
+                        return data; // Return data for further processing
+                    })
+                    .catch(error => {
+                        Swal.showValidationMessage('Request failed: ' + error);
+                        return false; // Prevent closing the dialog
+                    });
+            },
+            allowOutsideClick: () => !Swal.isLoading()
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Here we assume the deletion was successful and show a success message
+                Swal.fire('Deleted!', 'The database has been deleted.', 'success')
+                    .then(() => {
+                        // Optionally redirect or refresh the page after success
+                        window.location.reload();
+                    });
+            }
+        });
+    });
+</script>
+

@@ -1,0 +1,283 @@
+<% layout('./Layout/layout.ejs') -%>
+
+    <div id="content" class="app-content">
+        <div class="d-flex align-items-center mb-md-3 mb-2">
+            <div class="flex-fill">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/admin/faculty">MANAGE FACULTY</a></li>
+                </ol>
+                <h1 class="page-header">
+                    Manage Faculty <small>overview &amp; actions</small>
+                </h1>
+            </div>
+            <div class="ms-auto">
+                <button type="button" class="btn btn-theme" data-bs-toggle="modal" data-bs-target="#addFaculty">
+                    <i class="fa fa-plus-circle me-1"></i> Add Faculty
+                </button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <!-- Table of Faculty -->
+                            <table class="table table-bordered" id="facultyTable">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+    
+                                        <th>Name</th>
+                                        <th>Username</th>
+                                        <th>Email</th>
+    
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal for Adding Faculty -->
+        <div class="modal fade" id="addFaculty" tabindex="-1" aria-labelledby="addFacultyLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <form class="add-faculty-validation" method="POST">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="addFacultyLabel">Add New Faculty</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-2">
+                                <label for="name" class="form-label">Faculty Name</label>
+                                <input class="form-control" type="text" name="name" id="name" required autofocus>
+                            </div>
+                            <div class="mb-2">
+                                <label for="username" class="form-label">Username</label>
+                                <input class="form-control" type="text" name="username" id="username" required>
+                            </div>
+                            <div class="mb-2">
+                                <label for="email" class="form-label">Email</label>
+                                <input class="form-control" type="email" name="email" id="email" required>
+                            </div>
+                            <div class="mb-2">
+                                <label for="password" class="form-label">Password</label>
+                                <input class="form-control" type="password" name="password" id="password" required>
+                            </div>
+                            <div class="mb-2">
+                                <label for="confirm_password" class="form-label">Confirm Password</label>
+                                <input class="form-control" type="password" name="confirm_password"
+                                    id="confirm_password" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary" id="submit-button">Insert
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
+                                    style="display: none;"></span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
+
+        <div class="modal fade" id="modal-delete" tabindex="-1" aria-labelledby="modal-delete" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form id="deleteForm" action="/admin/faculty/delete/" method="POST">
+                        <input type="hidden" name="id" id="delete-id">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Delete Faculty</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Are you sure you want to delete the faculty member <span id="delete_name"
+                                    class="fw-bold"></span>?</p>
+                            <div class="alert alert-danger d-flex align-items-center" role="alert">
+                                <i class="fa fa-exclamation-triangle me-2"></i>
+                                <div>
+                                    <strong>Note:</strong> Deleting this will also delete all associated records.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal for Editing Faculty -->
+        <div class="modal fade" id="editFaculty" tabindex="-1" aria-labelledby="editFacultyLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <form class="edit-faculty-validation" method="POST">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="editFacultyLabel">Edit Faculty</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" name="id" id="edit-id">
+                            <div class="mb-2">
+                                <label for="edit-name" class="form-label">Faculty Name</label>
+                                <input class="form-control" type="text" name="name" id="edit-name" required>
+                            </div>
+                            <div class="mb-2">
+                                <label for="edit-username" class="form-label">Username</label>
+                                <input class="form-control" type="text" name="username" id="edit-username" required>
+                            </div>
+                            <div class="mb-2">
+                                <label for="edit-email" class="form-label">Email</label>
+                                <input class="form-control" type="email" name="email" id="edit-email" required>
+                            </div>
+                            <div class="mb-2">
+                                <label for="edit-password" class="form-label">New Password (Optional)</label>
+                                <input class="form-control" type="password" name="password" id="edit-password" required>
+                            </div>
+                            <div class="mb-2">
+                                <label for="edit-confirm-password" class="form-label">Confirm Password</label>
+                                <input class="form-control" type="password" name="confirm_password" id="edit-confirm-password" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary" id="edit-submit-button">Save Changes</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function deleteById(name, id) {
+            document.getElementById("delete_name").innerText = name;
+            document.getElementById("delete-id").value = id;
+
+            // Show the modal using Bootstrap 5 API
+            const modal = new bootstrap.Modal(
+                document.getElementById("modal-delete")
+            );
+            modal.show();
+        }
+
+        document
+            .getElementById("deleteForm")
+            .addEventListener("submit", async function (event) {
+                event.preventDefault(); // Prevent the form from submitting the traditional way
+
+                const id = document.getElementById("delete-id").value;
+
+                try {
+                    const response = await fetch("/admin/faculty/delete", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ id }),
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        // Close the modal
+                        const modal = bootstrap.Modal.getInstance(
+                            document.getElementById("modal-delete")
+                        );
+                        modal.hide();
+
+                        $.notify(
+                            {
+                                icon: "fa fa-check me-1",
+                                message: "Faculty deleted successfully!",
+                            },
+                            {
+                                type: "success",
+                                allow_dismiss: false,
+                            }
+                        );
+                        table.ajax.reload(null, false);
+                    } else {
+                        $.notify(
+                            {
+                                icon: "fa fa-check me-1",
+                                message: "There was an error!",
+                            },
+                            {
+                                type: "danger",
+                                allow_dismiss: false,
+                            }
+                        );
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 2000);
+                    }
+                } catch (error) {
+                    $.notify(
+                        {
+                            icon: "fa fa-times-circle me-1",
+                            message: "An error occurred. Please try again.",
+                        },
+                        {
+                            type: "danger",
+                        }
+                    );
+                    console.error("Error:", error);
+                }
+            });
+    </script>
+    <script>
+        var table = $("#facultyTable").DataTable({
+            processing: true,
+            ajax: {
+                url: "/admin/faculty/all",
+                type: "GET",
+            },
+            columns: [
+                { 'data': 'id' },
+
+                { 'data': 'name' },
+                { 'data': 'username' },
+                { 'data': 'email' }, // For demonstration; avoid displaying passwords in production.
+                {
+                    'data': null, 'render': function (data) {
+                        return `<div class="text-center"><div class="btn-group te">
+                    <button type="button" onclick="editById('${data.faculty_id}', '${data.name}', '${data.username}', '${data.email}')" class="btn btn-default">
+                        <i class="fas fa-fw fa-edit"></i>   
+                    </button>
+                    <button type="button" onclick="deleteById('${data.name}','${data.faculty_id}')" class="btn btn-default">
+                        <i class="fas fa-fw fa-trash-alt"></i>
+                    </button>
+                </div>
+                </div>`;
+                    }
+                }
+                ,
+            ]
+        });
+    </script>
+    <script>
+        function editById(id, name, username, email) {
+            document.getElementById("edit-id").value = id;
+            document.getElementById("edit-name").value = name;
+            document.getElementById("edit-username").value = username;
+            document.getElementById("edit-email").value = email;
+
+            // Show the modal using Bootstrap 5 API
+            const modal = new bootstrap.Modal(
+                document.getElementById("editFaculty")
+            );
+            modal.show();
+        }
+        
+
+    </script>

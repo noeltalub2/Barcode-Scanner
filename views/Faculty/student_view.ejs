@@ -1,0 +1,188 @@
+<% layout('./Layout/layout.ejs') -%>
+
+    <div id="content" class="app-content">
+
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/faculty/student">MANAGE STUDENT</a></li>
+            <li class="breadcrumb-item active">VIEW STUDENT</li>
+        </ol>
+        <h1 class="page-header">
+            View Student <small>overview &amp; details</small>
+        </h1>
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h4>Student Information</h4>
+                        <form class="edit-student-validation" method="post">
+                            <input type="hidden" value="<%=student.id%>" id="id" name="id">
+                            <div class="mb-2">
+                                <label for="student_id" class="form-label">Student
+                                    ID</label>
+                                <input class="form-control " type="text" name="student_id" id="student_id" required
+                                    value="<%=student.student_id%>"></input>
+
+                            </div>
+
+
+                            <div class="mb-2">
+                                <label for="name" class="form-label">Student
+                                    Name</label>
+                                <input class="form-control " type="text" name="name" id="name" required
+                                    value="<%=student.name%>"></input>
+                            </div>
+
+                            <div class="mb-2">
+                                <label for="email" class="form-label">Email</label>
+                                <input class="form-control " type="text" name="email" id="email" required
+                                    value="<%=student.email%>"></input>
+                            </div>
+                            <div class="mb-2">
+                                <label for="section" class="form-label">Degree</label>
+
+                                <input class="form-control " type="text" name="degree" id="degree" required
+                                    value="<%=student.degree%>"></input>
+
+                            </div>
+                            <div class="mb-2">
+                                <label for="course" class="form-label">Year &
+                                    Section</label>
+                                <input class="form-control " type="text" name="year_section" id=" year_section" required
+                                    value="<%=student.year_section%>" minlength="3" maxlength="3"></input>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" id="submit-button">Update <span
+                                    class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
+                                    style="display: none;"></span></button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="text-center">
+                            <h3>
+                                Generated Barcode
+                            </h3>
+                            <p class="fs-3 fw-bold"><%=student.student_id%></p>
+                            <svg id="barcode"></svg>
+                            <div class="download-btn">
+                                <button id="downloadBtn" class="btn btn-primary mt-3">Download Barcode</button>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+        <div class="row mt-4">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h4>Attendance Table</h4>
+                        <div class="table-responsive">
+    
+                            <!-- Table of Attendance -->
+                            <table class="table table-bordered " id="viewAttendanceTable">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Date</th>
+                                        <th>In AM</th>
+                                        <th>Out AM</th>
+                                        <th>In PM</th>
+                                        <th>Out PM</th>
+                                     
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% attendance.forEach((record, index) => { %>
+                                    <tr>
+                                        <td><%= index + 1 %></td>
+                                        <td><%= record.log_date %></td>
+                                        <td><%= record.time_in_am %></td>
+                                        <td><%= record.time_out_am %></td>
+                                        <td><%= record.time_in_pm %></td>
+                                        <td><%= record.time_out_pm %></td> <!-- Display 'N/A' if time_out_pm is null -->
+                                      
+                                    </tr>
+                                    <% }) %>
+                                </tbody>
+                                
+            
+                            </table>
+                        </div>  
+                    </div>
+                </div>
+            </div>
+           
+            
+        </div>
+    </div>
+    <script>
+        JsBarcode("#barcode", "<%-student.student_id%>", {
+          
+            width: 2,
+            height: 100,
+            displayValue: false
+        });
+
+         // Function to download the barcode
+    document.getElementById("downloadBtn").addEventListener("click", function () {
+        const barcodeElement = document.getElementById("barcode");
+
+        // Create a canvas to draw the SVG
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        const svg = new Blob([barcodeElement.outerHTML], { type: "image/svg+xml" });
+        const url = URL.createObjectURL(svg);
+
+        const img = new Image();
+        img.onload = function () {
+            // Set canvas size
+            canvas.width = 300;  // Adjust width
+            canvas.height = 150; // Adjust height
+
+            // Draw the SVG onto the canvas
+            ctx.drawImage(img, 0, 0);
+
+            // Convert canvas to PNG
+            const pngUrl = canvas.toDataURL("image/png");
+
+            // Create a link to download
+            const a = document.createElement("a");
+            a.href = pngUrl;
+            a.download = "<%=student.student_id%> - barcode.png"; // Specify the filename
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url); // Clean up
+        };
+        img.src = url; // Set image source to the SVG Blob URL
+    });
+    </script>
+
+<script>
+    var table = $("#viewAttendanceTable").DataTable({
+        dom: 'Bfrtip', // Specify the placement of the buttons
+        buttons: [
+            'copy', 
+            {
+                extend: 'excel',
+                text: 'Download Excel',
+                title: 'Attendance Data for Student ID for <%-student.student_id%>' // Set title for the Excel file
+            },
+            {
+                extend: 'pdf',
+                text: 'Download PDF',
+                title: 'Attendance Data', // Set title for the PDF file
+                orientation: 'portrait',
+                pageSize: 'A4'
+            },
+            'print' // Optionally add a print button
+        ],
+    })
+</script>

@@ -1,0 +1,469 @@
+<% layout('./Layout/layout.ejs') -%>
+
+    <div id="content" class="app-content">
+        <div class="d-flex align-items-center mb-md-3 mb-2">
+            <div class="flex-fill">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/admin/classes">MANAGE CLASSES</a></li>
+                </ol>
+                <h1 class="page-header">
+                    Manage Classes <small>overview &amp; actions</small>
+                </h1>
+            </div>
+            <div class="ms-auto">
+                <button type="button" class="btn btn-theme" data-bs-toggle="modal" data-bs-target="#addClass">
+                    <i class="fa fa-plus-circle me-1"></i> Add Class
+                </button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <!-- Table of Classes -->
+                            <table class="table table-bordered" id="classTable">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Class Name</th>
+                                        <th>Subject</th>
+                                        <th>Room Number</th>
+                                        <th>Faculty</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal for Adding Class -->
+        <div class="modal fade" id="addClass" tabindex="-1" aria-labelledby="addClassLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <form class="add-class-validation" method="POST">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="addClassLabel">Add New Class</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-2">
+                                <label for="className" class="form-label">Class Name</label>
+                                <input class="form-control" type="text" name="class_name" id="className" required
+                                    autofocus>
+                            </div>
+                            <div class="mb-2">
+                                <label for="roomNumber" class="form-label">Room Number</label>
+                                <input class="form-control" type="text" name="room_number" id="roomNumber" required>
+                            </div>
+                            <div class="mb-2">
+                                <label for="subjectSelect" class="form-label">Subject</label>
+                                <select class="form-control" id="subjectSelect" name="subject_id" required>
+                                    <% subjects.forEach(subject=> { %>
+                                        <option value="<%= subject.subject_id %>">
+                                            <%= subject.subject_name %>
+                                        </option>
+                                        <% }) %>
+                                </select>
+                            </div>
+                            <div class="mb-2">
+                                <label for="facultySelect" class="form-label">Faculty</label>
+                                <select class="form-control" id="facultySelect" name="faculty_id" required>
+                                    <% faculty.forEach(facultyMember=> { %>
+                                        <option value="<%= facultyMember.id %>">
+                                            <%= facultyMember.name %>
+                                        </option>
+                                        <% }) %>
+                                </select>
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary" id="submit-button">Insert
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
+                                    style="display: none;"></span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal for Editing Class -->
+        <div class="modal fade" id="editClass" tabindex="-1" aria-labelledby="editClassLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <form class="edit-class-validation" >
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="editClassLabel">Edit Class</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" name="class_id" id="edit-class-id">
+                            <div class="mb-2">
+                                <label for="edit-class-name" class="form-label">Class Name</label>
+                                <input class="form-control" type="text" name="class_name" id="edit-class-name" required>
+                            </div>
+                            <div class="mb-2">
+                                <label for="edit-room-number" class="form-label">Room Number</label>
+                                <input class="form-control" type="text" name="room_number" id="edit-room-number"
+                                    required>
+                            </div>
+                            <div class="mb-2">
+                                <label for="edit-subjectSelect" class="form-label">Subject</label>
+                                <select class="form-control" id="edit-subjectSelect" name="subject_id" required>
+                                    <% subjects.forEach(subject=> { %>
+                                        <option value="<%= subject.subject_id %>">
+                                            <%= subject.subject_name %>
+                                        </option>
+                                        <% }) %>
+                                </select>
+                            </div>
+                            <div class="mb-2">
+                                <label for="edit-facultySelect" class="form-label">Faculty</label>
+                                <select class="form-control" id="edit-facultySelect" name="faculty_id" required>
+                                    <% faculty.forEach(facultyMember=> { %>
+                                        <option value="<%= facultyMember.id %>">
+                                            <%= facultyMember.name %>
+                                        </option>
+                                        <% }) %>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary" id="edit-submit-button">Update <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
+                                style="display: none;"></span></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal for Deleting Class -->
+        <div class="modal fade" id="modal-delete-class" tabindex="-1" aria-labelledby="modal-delete-class"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form id="deleteClassForm" action="/admin/class/delete" method="POST">
+                        <input type="hidden" name="id" id="delete-class-id">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Delete Class</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Are you sure you want to delete the class <span id="delete_class_name"
+                                    class="fw-bold"></span>?</p>
+                            <div class="alert alert-danger d-flex align-items-center" role="alert">
+                                <i class="fa fa-exclamation-triangle me-2"></i>
+                                <div>
+                                    <strong>Note:</strong> Deleting this will also delete all associated records.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+     
+        // Function to delete class by ID
+        function deleteClassById(name, id) {
+            document.getElementById("delete_class_name").innerText = name;
+            document.getElementById("delete-class-id").value = id;
+
+            const modal = new bootstrap.Modal(document.getElementById("modal-delete-class"));
+            modal.show();
+        }
+
+        document.getElementById("deleteClassForm").addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const id = document.getElementById("delete-class-id").value;
+
+            try {
+                const response = await fetch("/admin/class/delete", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ id }),
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    const modal = bootstrap.Modal.getInstance(document.getElementById("modal-delete-class"));
+                    modal.hide();
+
+                    $.notify({
+                        icon: "fa fa-check me-1",
+                        message: "Class deleted successfully!",
+                    }, {
+                        type: "success",
+                        allow_dismiss: false,
+                    });
+                    table.ajax.reload(null, false);
+                } else {
+                    $.notify({
+                        icon: "fa fa-times-circle me-1",
+                        message: "There was an error!",
+                    }, {
+                        type: "danger",
+                        allow_dismiss: false,
+                    });
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                }
+            } catch (error) {
+                $.notify({
+                    icon: "fa fa-times-circle me-1",
+                    message: "An error occurred. Please try again.",
+                }, {
+                    type: "danger",
+                });
+                console.error("Error deleting class:", error);
+            }
+        });
+
+        // DataTable for classes
+        var table = $("#classTable").DataTable({
+            processing: true,
+            ajax: {
+                url: "/admin/class/all",
+                type: "GET",
+                dataSrc: 'data' // Ensure the correct path to your data
+            },
+            columns: [
+                { 'data': 'id' }, // Display row number (optional)
+                { 'data': 'class_name' }, // Class name
+                { 'data': 'subject_name' }, // Subject name from the DB
+                { 'data': 'room_number' }, // Room number
+                { 'data': 'faculty_name' }, // Faculty name from the DB
+                {
+                    'data': null,
+                    'render': function (data) {
+                        return `<div class="text-center">
+                    <div class="btn-group">
+                        <button type="button" onclick="editClassById('${data.class_id}', '${data.class_name}', '${data.room_number}', '${data.subject_id}', '${data.faculty_id}')" class="btn btn-default" data-bs-toggle="modal" data-bs-target="#editClass"> 
+                            <i class="fas fa-fw fa-edit"></i> 
+                        </button>
+                        <button type="button" onclick="deleteClassById('${data.class_name}', '${data.class_id}')" class="btn btn-default">  
+                            <i class="fas fa-fw fa-trash-alt"></i>
+                        </button>
+                    </div>
+                </div>`;
+                    },
+                },
+            ],
+        });
+
+           function editClassById(id, name, roomNumber, subjectId, facultyId) {
+            // Set the hidden input for the class ID
+            document.getElementById("edit-class-id").value = id;
+
+            // Set the input values for class name and room number
+            document.getElementById("edit-class-name").value = name;
+            document.getElementById("edit-room-number").value = roomNumber;
+
+            // Set the selected options for subject and faculty based on provided IDs
+            const subjectSelect = document.getElementById("edit-subjectSelect");
+            const facultySelect = document.getElementById("edit-facultySelect");
+
+            // Set the selected option for the subject
+            for (let i = 0; i < subjectSelect.options.length; i++) {
+                if (subjectSelect.options[i].value == subjectId) {
+                    subjectSelect.selectedIndex = i;
+                    break;
+                }
+            }
+
+            // Set the selected option for the faculty
+            for (let i = 0; i < facultySelect.options.length; i++) {
+                if (facultySelect.options[i].value == facultyId) {
+                    facultySelect.selectedIndex = i;
+                    break;
+                }
+            }
+        }
+
+
+
+        document.getElementById("updateClassForm").addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const id = document.getElementById("delete-class-id").value;
+
+            try {
+                const response = await fetch("/admin/class/delete", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ id }),
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    const modal = bootstrap.Modal.getInstance(document.getElementById("modal-delete-class"));
+                    modal.hide();
+
+                    $.notify({
+                        icon: "fa fa-check me-1",
+                        message: "Class deleted successfully!",
+                    }, {
+                        type: "success",
+                        allow_dismiss: false,
+                    });
+                    table.ajax.reload(null, false);
+                } else {
+                    $.notify({
+                        icon: "fa fa-times-circle me-1",
+                        message: "There was an error!",
+                    }, {
+                        type: "danger",
+                        allow_dismiss: false,
+                    });
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                }
+            } catch (error) {
+                $.notify({
+                    icon: "fa fa-times-circle me-1",
+                    message: "An error occurred. Please try again.",
+                }, {
+                    type: "danger",
+                });
+                console.error("Error deleting class:", error);
+            }
+        });
+
+    </script>
+    <script>
+        !(function () {
+    "use strict";
+    class e {
+        static initValidation() {
+            // Initialize jQuery validation for adding a class
+            jQuery(".add-class-validation").validate({
+                rules: {
+                    class_name: {
+                        required: true,
+                        minlength: 2,
+                    },
+                    room_number: {
+                        required: true,
+                        minlength: 1,
+                    },
+                    subject_id: {
+                        required: true,
+                    },
+                    faculty_id: {
+                        required: true,
+                    },
+                },
+                messages: {
+                    class_name: {
+                        required: "Please enter the class name",
+                        minlength: "The class name must consist of at least 2 characters",
+                    },
+                    room_number: {
+                        required: "Please enter the room number",
+                        minlength: "The room number must be at least 1 character long",
+                    },
+                    subject_id: {
+                        required: "Please select a subject",
+                    },
+                    faculty_id: {
+                        required: "Please select a faculty member",
+                    },
+                },
+                submitHandler: function (form) {
+                    const submitButton = document.getElementById("submit-button");
+                    const spinner = submitButton.querySelector(".spinner-border");
+                    // Show spinner and disable button
+                    spinner.style.display = "inline-block";
+                    submitButton.disabled = true;
+                    submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>Inserting...';
+
+                    const formData = new FormData(form); // Collect form data
+
+                    fetch("/admin/class", {
+                        method: "POST",
+                        body: formData,
+                    })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        spinner.style.display = "none";
+                        submitButton.disabled = false;
+                        submitButton.innerHTML = 'Insert <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>';
+                        if (data.success) {
+                            const modal = document.querySelector("#addClass");
+                            if (modal) {
+                                const modalInstance = bootstrap.Modal.getInstance(modal);
+                                if (modalInstance) {
+                                    modalInstance.hide(); // Close the modal
+                                }
+                            }
+                            $.notify({
+                                type: "success",
+                                icon: "fa fa-check me-1",
+                                message: data.message,
+                            }, {
+                                type: "success",
+                                allow_dismiss: false,
+                            });
+                            form.reset(); // Reset the form
+                            table.ajax.reload(null, false); 
+                        } else {
+                            $.notify({
+                                type: "danger",
+                                icon: "fa fa-times-circle me-1",
+                                message: data.message,
+                            }, {
+                                type: "danger",
+                                allow_dismiss: false,
+                            });
+                        }
+                    })
+                    .catch((error) => {
+                        spinner.style.display = "none";
+                        submitButton.disabled = false;
+                        submitButton.innerHTML = 'Insert <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>';
+                        $.notify({
+                            type: "danger",
+                            icon: "fa fa-times-circle me-1",
+                            message: "An error occurred. Please try again.",
+                        }, {
+                            type: "danger",
+                            allow_dismiss: false,
+                        });
+                        console.error("Error:", error);
+                    });
+                },
+            });
+        }
+
+        static init() {
+            this.initValidation();
+        }
+    }
+
+    // Call init function on document ready
+    $(document).ready(() => e.init());
+})();
+
+    </script>
