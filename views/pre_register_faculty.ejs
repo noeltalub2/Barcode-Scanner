@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>
+		<%= title %>
+	</title>
+	<link href="/assets/css/vendor.min.css" rel="stylesheet">
+	<link href="/assets/css/app.min.css" rel="stylesheet">
+	<link rel="icon" type="image/png" href="/assets/img/logo/favicon-48x48.png" sizes="48x48" />
+	<link rel="icon" type="image/svg+xml" href="/assets/img/logo/favicon.svg" />
+	<link rel="shortcut icon" href="/assets/img/logo/favicon.ico" />
+	<link rel="apple-touch-icon" sizes="180x180" href="/assets/img/logo/apple-touch-icon.png" />
+	<link rel="manifest" href="/assets/img/logo/site.webmanifest" />
+	<style>
+		.error {
+			color: #dc3545;
+			/* Sets error text color to red */
+
+
+		}
+	</style>
+</head>
+
+<body>
+	<!-- BEGIN #app -->
+	<div id="app" class="app app-full-height app-without-header">
+		<!-- BEGIN login -->
+		<div class="login">
+			<!-- BEGIN login-content -->
+			<div class="login-content">
+				<form action="/register" method="POST" class="register-faculty-validation">
+					<div class="text-center">
+						<a href="/">
+							<div class="d-flex align-items-center justify-content-center">
+								<div class="me-1">
+									<img src="/assets/img/mmsu_logo.png" alt="mmsu logo" width="50">
+								</div>
+								<div>
+									<img src="/assets/img/logo.png" alt="cit logo" width="50">
+								</div>
+							</div>
+						</a>
+
+						<h1>Pre-Registration for Faculty</h1>
+					</div>
+
+					<div class="text-muted text-center mb-4">
+						For your protection, please verify your identity. Your registration will be submitted to the admin for approval.
+					</div>
+
+					<div class="mb-2">
+						<label for="name" class="form-label">Faculty Name</label>
+						<input class="form-control" type="text" name="name" required>
+					</div>
+					<div class="mb-2">
+						<label for="username" class="form-label">Username</label>
+						<input class="form-control" type="text" name="username" id="register-username" required>
+					</div>
+					<div class="mb-2">
+						<label for="email" class="form-label">Email</label>
+						<input class="form-control" type="email" name="email" id="register-email" required>
+					</div>
+					<div class="mb-2">
+						<label for="password" class="form-label">Password</label>
+						<input class="form-control" type="password" name="password" id="register-password" required>
+					</div>
+					<div class="mb-2">
+						<label for="confirm-password" class="form-label">Confirm Password</label>
+						<input class="form-control" type="password" name="confirm_password"
+							id="register-confirm-password" required>
+					</div>
+
+					<button type="submit" class="btn btn-theme btn-lg d-block w-100 fw-500 mb-3" id="submit-button"> <span class="spinner-border spinner-border-sm" role="status"
+						aria-hidden="true" style="display: none;"></span>Register</button>
+
+					
+					<!-- BEGIN registration option -->
+					<div class="mt-3 text-center">
+						<p>Already have an account? <a href="/signin" class="btn-link">Sign In</a></p>
+						
+					</div>
+					<!-- END registration option -->
+
+					<div class="mt-2 text-center">
+						<a href="/signin/admin">Login as Administrator</a>
+					</div>
+
+				</form>
+			</div>
+			<!-- END login-content -->
+		</div>
+		<!-- END login -->
+
+		<!-- BEGIN btn-scroll-top -->
+		<a href="#" data-click="scroll-top" class="btn-scroll-top fade"><i class="fa fa-arrow-up"></i></a>
+		<!-- END btn-scroll-top -->
+	</div>
+	<!-- END #app -->
+
+	<!-- ================== BEGIN core-js ================== -->
+	<script src="/assets/js/vendor.min.js"></script>
+	<script src="/assets/js/app.min.js"></script>
+	<script src="/assets/js/jquery.min.js"></script>
+
+	<script src="/assets/plugins/jquery-validation/jquery.validate.min.js"></script>
+
+	<script src="/assets/plugins/bootstrap-notify/bootstrap-notify.min.js"></script>
+	<!-- ================== END core-js ================== -->
+	<script>
+		(function () {
+			"use strict";
+			class e {
+				static initValidation() {
+					// Initialize jQuery validation for faculty registration
+					jQuery(".register-faculty-validation").validate({
+						rules: {
+							name: {
+								required: true,
+								minlength: 2,
+							},
+							username: {
+								required: true,
+								minlength: 3,
+								remote: {
+									url: "/availability",
+									type: "POST",
+									data: {
+										field: "username",
+										value: function () {
+											return $("#register-username").val();
+										},
+										user: "faculty",
+									},
+									dataType: "json",
+									async: true,
+									dataFilter: function (response) {
+										var json = JSON.parse(response);
+										return json.available ? "true" : "false";
+									},
+								},
+							},
+							email: {
+								required: true,
+								email: true,
+								remote: {
+									url: "/availability",
+									type: "POST",
+									data: {
+										field: "email",
+										value: function () {
+											return $("#register-email").val();
+										},
+										user: "faculty",
+									},
+									dataType: "json",
+									async: true,
+									dataFilter: function (response) {
+										var json = JSON.parse(response);
+										return json.available ? "true" : "false";
+									},
+								},
+							},
+							password: {
+								required: true,
+								minlength: 6,
+							},
+							confirm_password: {
+								required: true,
+								equalTo: "#register-password",
+							}
+
+						},
+						messages: {
+							name: {
+								required: "Please enter your name",
+								minlength:
+									"The name must consist of at least 2 characters",
+							},
+							username: {
+								required: "Please enter a username",
+								minlength:
+									"The username must consist of at least 3 characters",
+								remote: "This username is not available",
+							},
+							email: {
+								required: "Please enter your email address",
+								email: "Please enter a valid email address",
+								remote: "This email is already registered",
+							},
+							password: {
+								required: "Please provide a password",
+								minlength:
+									"Your password must be at least 6 characters long",
+							},
+							confirm_password: {
+								required: "Please confirm your password",
+								equalTo: "Passwords do not match",
+							},
+						},
+						submitHandler: function (form) {
+							const submitButton =
+								document.getElementById("submit-button");
+							const spinner =
+								submitButton.querySelector(".spinner-border");
+							// Show spinner and disable button
+							spinner.style.display = "inline-block";
+							submitButton.disabled = true;
+							submitButton.innerHTML =
+								'<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>Registering...';
+
+							const formData = new FormData(form); // Collect form data
+
+							fetch("/register", {
+								method: "POST",
+								body: formData,
+							})
+								.then((response) => response.json())
+								.then((data) => {
+									spinner.style.display = "none";
+									submitButton.disabled = false;
+									submitButton.innerHTML =
+										'Register <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>';
+									if (data.success) {
+										$.notify(
+											{
+												type: "success",
+												icon: "fa fa-check me-1",
+												message: data.message,
+											},
+											{
+												type: "success",
+												allow_dismiss: false,
+											}
+										);
+										form.reset(); // Reset the form
+									} else {
+										$.notify(
+											{
+												type: "danger",
+												icon: "fa fa-times-circle me-1",
+												message: data.message,
+											},
+											{
+												type: "danger",
+												allow_dismiss: false,
+											}
+										);
+									}
+								})
+								.catch((error) => {
+									spinner.style.display = "none";
+									submitButton.disabled = false;
+									submitButton.innerHTML =
+										'Register <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>';
+									$.notify(
+										{
+											type: "danger",
+											icon: "fa fa-times-circle me-1",
+											message:
+												"An error occurred. Please try again.",
+										},
+										{
+											type: "danger",
+											allow_dismiss: false,
+										}
+									);
+									console.error("Error:", error);
+								});
+						},
+					});
+				}
+
+				static init() {
+					this.initValidation();
+				}
+			}
+
+			// Call init function on document ready
+			$(document).ready(() => e.init());
+		})();
+
+	</script>
+</body>
+
+</html>

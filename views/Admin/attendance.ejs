@@ -16,6 +16,17 @@
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-body">
+                        <div class="mb-3">
+
+                            <div id="advance-daterange" class="btn btn-theme text-start">
+                                <span class="text-truncate">&nbsp;</span>
+                                <i class="fa fa-caret-down ms-auto"></i>
+                            </div>
+                            
+                            <button class="btn btn-secondary" id="downloadReport"
+                                onclick="downloadReport(event)">Download
+                                Report</button>
+                        </div>
                         <div class="table-responsive">
                             <!-- Table of Faculty -->
                             <table class="table table-bordered attendance-table" id="attendanceTable">
@@ -66,9 +77,103 @@
     </div>
 
     <script>
-        var table = $("#attendanceTable").DataTable({
+       
+   // Get the start and end dates for the last 30 days
+   let start = moment().subtract(30, 'days');
+        let end = moment();
 
-         
-        });
+        // Format start and end dates for database or API usage
+        let startDate = start.format('YYYY-MM-DD');
+        let endDate = end.format('YYYY-MM-DD');
 
+        // Create an array of formatted dates
+        let selectedDate = [startDate, endDate];
+
+        async function downloadReport(event) {
+            event.preventDefault();  // Prevent the default action (which is a regular link click)
+            window.location.href = "/download-attendance?startDate=" + selectedDate[0] + "&endDate=" + selectedDate[1];
+           
+
+        }
+
+        var handleDateRangePicker = function () {
+
+$('#advance-daterange span').html(
+    moment().subtract(30, 'days').format('MMMM D, YYYY') + ' - ' + moment().format('MMMM D, YYYY')
+);
+
+
+// Initialize another Date Range Picker
+$('#advance-daterange').daterangepicker({
+    format: 'MM/DD/YYYY',
+    startDate: moment().subtract(29, 'days'),
+    endDate: moment(),
+
+    dateLimit: { days: 60 },
+    showDropdowns: true,
+    showWeekNumbers: true,
+    timePicker: false,
+    timePickerIncrement: 1,
+    timePicker12Hour: true,
+    ranges: {
+        'Today': [moment(), moment()],
+        'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+        'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+        'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+        'This Month': [moment().startOf('month'), moment().endOf('month')],
+        'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+    },
+    opens: 'right',
+    drops: 'down',
+    buttonClasses: ['btn', 'btn-sm'],
+    applyClass: 'btn-primary',
+    cancelClass: 'btn-default',
+    separator: ' to ',
+    locale: {
+        applyLabel: 'Submit',
+        cancelLabel: 'Cancel',
+        fromLabel: 'From',
+        toLabel: 'To',
+        customRangeLabel: 'Custom',
+        daysOfWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
+        monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+        firstDay: 1
+    }
+}, function (start, end, label) {
+    $('#advance-daterange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+    filterByDateRange(start, end); // Call filter function when date range is selected
+});
+};
+
+// Function to filter the DataTable based on the selected date range
+function filterByDateRange(start, end) {
+var startDate = start.format('YYYY-MM-DD');
+var endDate = end.format('YYYY-MM-DD');
+selectedDate = [startDate, endDate];
+// Apply the filter to the attendance table based on the selected date range
+table.column(3).search(function (settings, data, dataIndex) {
+    var readableDate = data[5]; // Assuming the readable date is in the 4th column (index 3)
+
+    // Convert the readable date to a Date object
+    var date = new Date(readableDate);
+    var formattedDate = date.toISOString().split('T')[0]; // Convert to 'YYYY-MM-DD' format
+
+    // Compare the formatted date with the start and end date
+    return formattedDate >= startDate && formattedDate <= endDate;
+}).draw();
+}
+
+
+// Initialize the DataTable only once
+if ($.fn.dataTable.isDataTable('#attendanceTable')) {
+$('#attendanceTable').DataTable().clear().destroy();
+}
+
+// Initialize DataTable
+var table = $("#attendanceTable").DataTable({
+
+});
+
+// Call the function to initialize the date range picker
+handleDateRangePicker();
     </script>

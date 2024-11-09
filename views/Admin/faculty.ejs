@@ -26,11 +26,11 @@
                                 <thead>
                                     <tr>
                                         <th>#</th>
-    
                                         <th>Name</th>
                                         <th>Username</th>
                                         <th>Email</th>
-    
+                                        <th>Status</th>
+                                        <th>Registration Status</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -53,7 +53,7 @@
                         <div class="modal-body">
                             <div class="mb-2">
                                 <label for="name" class="form-label">Faculty Name</label>
-                                <input class="form-control" type="text" name="name" id="name" required autofocus>
+                                <input class="form-control" type="text" name="name" id="name" required autofocus oninput="generatePassword()">
                             </div>
                             <div class="mb-2">
                                 <label for="username" class="form-label">Username</label>
@@ -65,13 +65,9 @@
                             </div>
                             <div class="mb-2">
                                 <label for="password" class="form-label">Password</label>
-                                <input class="form-control" type="password" name="password" id="password" required>
+                                <input class="form-control" type="text" name="password" id="password" readonly>
                             </div>
-                            <div class="mb-2">
-                                <label for="confirm_password" class="form-label">Confirm Password</label>
-                                <input class="form-control" type="password" name="confirm_password"
-                                    id="confirm_password" required>
-                            </div>
+                         
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -145,6 +141,24 @@
                             <div class="mb-2">
                                 <label for="edit-confirm-password" class="form-label">Confirm Password</label>
                                 <input class="form-control" type="password" name="confirm_password" id="edit-confirm-password" required>
+                            </div>
+                            <div class="mb-2">
+                                <label for="edit-registration-status" class="form-label">Registration Status</label>
+                                <select class="form-select" name="registration_status" id="edit-registration-status" required>
+                                    <option value="" disabled selected>Select Status</option>
+                                    <option value="pending">Pending</option>
+                                    <option value="approved">Approved</option>
+                                    <option value="rejected">Rejected</option>
+                                </select>
+                            </div>
+                            <div class="mb-2">
+                                <label for="edit-is-active" class="form-label">Account Status</label>
+                                <select class="form-select" name="is_active" id="edit-is-active" required>
+                                    <option value="" disabled selected>Select Status</option>
+                                    <option value="0">Inactive</option>
+                                    <option value="1">Active</option>
+                     
+                                </select>
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -243,35 +257,67 @@
                 type: "GET",
             },
             columns: [
-                { 'data': 'id' },
+    { 'data': 'id' },
+    { 'data': 'name' },
+    { 'data': 'username' },
+    { 'data': 'email' }, // For demonstration; avoid displaying passwords in production.
+    {
+        'data': 'is_active',
+        'render': function (data) {
+            if (data == 1) {
+                return '<span class="badge bg-success">Active</span>';
+            } else {
+                return '<span class="badge bg-danger">Inactive</span>';
+            }
+        }
+    },
+    {
+        'data': 'registration_status',
+        'render': function (data) {
+            let badgeClass = '';
+            let badgeText = '';
+            
+            // Set badge class and text based on registration status
+            if (data === 'pending') {
+                badgeClass = 'bg-warning'; // Yellow badge for pending
+                badgeText = 'Pending';
+            } else if (data === 'approved') {
+                badgeClass = 'bg-success'; // Green badge for approved
+                badgeText = 'Approved';
+            } else if (data === 'rejected') {
+                badgeClass = 'bg-danger'; // Red badge for rejected
+                badgeText = 'Rejected';
+            }
+            
+            return `<span class="badge ${badgeClass}">${badgeText}</span>`;
+        }
+    },
+    {
+        'data': null, 'render': function (data) {
+            return `<div class="text-center">
+                        <div class="btn-group te">
+                            <button type="button" onclick="editById('${data.faculty_id}', '${data.name}', '${data.username}', '${data.email}', '${data.registration_status}', '${data.is_active}')" class="btn btn-default">
+                                <i class="fas fa-fw fa-edit"></i>
+                            </button>
+                            <button type="button" onclick="deleteById('${data.name}','${data.faculty_id}')" class="btn btn-default">
+                                <i class="fas fa-fw fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </div>`;
+        }
+    }
+]
 
-                { 'data': 'name' },
-                { 'data': 'username' },
-                { 'data': 'email' }, // For demonstration; avoid displaying passwords in production.
-                {
-                    'data': null, 'render': function (data) {
-                        return `<div class="text-center"><div class="btn-group te">
-                    <button type="button" onclick="editById('${data.faculty_id}', '${data.name}', '${data.username}', '${data.email}')" class="btn btn-default">
-                        <i class="fas fa-fw fa-edit"></i>   
-                    </button>
-                    <button type="button" onclick="deleteById('${data.name}','${data.faculty_id}')" class="btn btn-default">
-                        <i class="fas fa-fw fa-trash-alt"></i>
-                    </button>
-                </div>
-                </div>`;
-                    }
-                }
-                ,
-            ]
         });
     </script>
     <script>
-        function editById(id, name, username, email) {
+        function editById(id, name, username, email, registration_status, is_active) {
             document.getElementById("edit-id").value = id;
             document.getElementById("edit-name").value = name;
             document.getElementById("edit-username").value = username;
             document.getElementById("edit-email").value = email;
-
+            document.getElementById("edit-registration-status").value = registration_status;
+            document.getElementById("edit-is-active").value = is_active;
             // Show the modal using Bootstrap 5 API
             const modal = new bootstrap.Modal(
                 document.getElementById("editFaculty")
@@ -281,3 +327,30 @@
         
 
     </script>
+    <script>
+        function generatePassword() {
+            const fullName = document.getElementById("name").value.trim();
+            const passwordField = document.getElementById("password");
+        
+            if (fullName) {
+                // Split full name into parts
+                const nameParts = fullName.split(" ");
+                const firstName = nameParts.slice(0, -2).join(" ") || nameParts[0];
+                const lastName = nameParts.slice(-1)[0] || "";
+                
+                // Get first 3 letters of the first and last names
+                const firstPart = firstName.slice(0, 3);
+                const lastPart = lastName.slice(-3);
+        
+                // Count letters
+                const firstNameCount = firstName.replace(/ /g, "").length;
+                const lastNameCount = lastName.length;
+        
+                // Construct password
+                const password = `${firstPart}${lastPart}${firstNameCount}${lastNameCount}`;
+                passwordField.value = password;
+            } else {
+                passwordField.value = "";  // Clear password if name is empty
+            }
+        }
+        </script>

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 17, 2024 at 02:16 PM
+-- Generation Time: Nov 09, 2024 at 05:10 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -65,6 +65,8 @@ CREATE TABLE `faculty` (
   `email` varchar(255) NOT NULL,
   `password` varchar(60) NOT NULL,
   `profile_url` varchar(255) NOT NULL,
+  `is_active` tinyint(1) DEFAULT 0,
+  `registration_status` enum('pending','approved','rejected') DEFAULT 'pending',
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
   `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -111,6 +113,10 @@ CREATE TABLE `subjects` (
   `subject_name` varchar(255) NOT NULL,
   `subject_code` varchar(50) NOT NULL,
   `description` text DEFAULT NULL,
+  `semester` varchar(255) NOT NULL,
+  `academic_year` varchar(255) NOT NULL,
+  `time_day` varchar(255) NOT NULL,
+  `type` varchar(255) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -138,7 +144,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `username`, `email`, `password`, `role`, `profile_url`, `created_at`, `updated_at`) VALUES
-(2, 'Noel', 'admin', 'admin@gmail.com', '$2b$10$jz3r1uI5mMAnPxHb3v8YCubY6b9udczTNDHS0UiiekdlHFhdcRDfa', 'admin', 'default.jpg', '2024-10-15 17:57:05', '2024-10-16 14:05:50');
+(2, 'Administrator', 'admin', 'admin@gmail.com', '$2a$12$WFr2SLARMnucaGAIMo6E5OMxXKmeyYeGibAV8DYvrseFoxDl45q/q', 'admin', 'default.jpg', '2024-10-15 17:57:05', '2024-11-10 00:10:10');
 
 --
 -- Indexes for dumped tables

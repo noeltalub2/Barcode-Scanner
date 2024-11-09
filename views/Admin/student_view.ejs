@@ -211,12 +211,14 @@
         var table = $("#viewAttendanceTable").DataTable({
             dom: 'Bfrtip', // Specify the placement of the buttons
             buttons: [
-                'copy',
+             
                 {
-                    extend: 'excel',
-                    text: 'Download Excel',
-                    title: 'Attendance Data for Student ID for <%-student.student_id%>' // Set title for the Excel file
-                },
+                extend: 'excel',
+                text: 'Download Excel',
+                messageTop: `Attendance Data: <%-student.name%> (<%-student.student_id%>)`,
+                title: `Mariano Marcos State University`,// Set title for the Excel file
+                filename: `Attendance Data: <%-student.name%> (<%-student.student_id%>)`,
+            },
                 {
                     extend: 'pdf',
                     text: 'Download PDF',
@@ -224,7 +226,7 @@
                     orientation: 'portrait',
                     pageSize: 'A4'
                 },
-                'print' // Optionally add a print button
+               
             ],
         })
     </script>

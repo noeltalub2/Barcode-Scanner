@@ -34,7 +34,7 @@
                                         <th>#</th>
                                         <th>Student Number</th>
                                         <th>Name</th>
-                                        <th>Email</th>
+                              
                                         <th>Degree</th>
                                         <th>Year / Section</th>
                                         <th>Action</th>
@@ -67,7 +67,7 @@
                                         <input type="radio" class="btn-check" name="inputOption" id="singleDataOption"
                                             value="single" autocomplete="off" checked>
                                         <label class="btn btn-outline-primary" for="singleDataOption">Single
-                                            Data</label>
+                                            Data Only</label>
 
                                         <input type="radio" class="btn-check" name="inputOption" id="excelUploadOption"
                                             value="excel" autocomplete="off">
@@ -119,9 +119,14 @@
                             <!-- Excel Upload Form (hidden by default) -->
                             <div class="col-lg-12" id="excelUploadForm" style="display: none;">
                                 <div class="excel-container">
-
+                                    <p><strong>How to Use:</strong></p>
+                                    <ul>
+                                        <li>Download the <a href="/document/sample_template_students.xlsx" download>sample template</a>.</li>
+                                        <li>Ensure each row corresponds to a record, with columns like "Student ID," "Fullname," "Email," "Degree" and "Year/Section".</li>
+                                        <li>Save the file in .xlsx format and upload it here.</li>
+                                    </ul>
                                     <div class="excel-img-container text-center mt-2">
-                                        <img src="/images/excel.png" alt="" class="img-fluid mx-auto d-block">
+                                        <img src="/images/excel-students.png" alt="" class="img-fluid mx-auto d-block">
                                         <small class="fst-italic">Example of Excel Format</small>
                                     </div>
 
@@ -297,7 +302,7 @@
                 { 'data': 'id' },
                 { 'data': 'student_id' },
                 { 'data': 'name' },
-                { 'data': 'email' },
+      
                 { 'data': 'degree' },
                 { 'data': 'year_section' },
                 {
@@ -328,7 +333,7 @@
                 const form = event.target;
                 const formData = new FormData(form);
                 try {
-                    const response = await fetch("/admin/upload_excel", {
+                    const response = await fetch("/admin/upload_excel/students", {
                         method: "POST",
                         body: formData,
                     });
@@ -350,6 +355,7 @@
                             type: "success",
                             allow_dismiss: false,
                         });
+                        form.reset();
                         table.ajax.reload(null, false);
                     } else {
                         errorMessageDiv.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;

@@ -1,4 +1,4 @@
-!(function () {
+(function () {
     "use strict";
     class e {
         static initValidation() {
@@ -12,11 +12,24 @@
                     subject_code: {
                         required: true,
                         minlength: 3,
-                        
                     },
                     description: {
                         required: true,
                         minlength: 10,
+                    },
+                    semester: {
+                        required: true,
+                    },
+                    academic_year: {
+                        required: true,
+                        minlength: 4,
+                        maxlength: 9, // Example: "2023-2024"
+                    },
+                    time_day: {
+                        required: true,
+                    },
+                    type: {
+                        required: true,
                     },
                 },
                 messages: {
@@ -27,11 +40,24 @@
                     subject_code: {
                         required: "Please enter a subject code",
                         minlength: "The subject code must consist of at least 3 characters",
-        
                     },
                     description: {
                         required: "Please provide a description",
                         minlength: "The description must be at least 10 characters long",
+                    },
+                    semester: {
+                        required: "Please select the semester",
+                    },
+                    academic_year: {
+                        required: "Please enter the academic year",
+                        minlength: "Please enter a valid academic year (e.g., 2023-2024)",
+                        maxlength: "Academic year should be in 'YYYY-YYYY' format",
+                    },
+                    time_day: {
+                        required: "Please specify the time/day",
+                    },
+                    type: {
+                        required: "Please specify the type",
                     },
                 },
                 submitHandler: function (form) {

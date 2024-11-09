@@ -17,7 +17,7 @@
             <div class="ms-auto">
 
                 <button type="button" class="btn btn-theme" data-bs-toggle="modal" data-bs-target="#addUser">
-                    <i class="fa fa-plus-circle me-1"></i> Add Student
+                    <i class="fa fa-plus-circle me-1"></i> Enroll Student
                 </button>
             </div>
         </div>
@@ -38,14 +38,31 @@
                         <p class="mb-0"><strong>Subject Name:</strong>
                             <%= class_info.subject_name %>
                         </p>
+
+
+                        <p class="mb-0"><strong>Semester:</strong>
+                            <%= class_info.semester %>
+                        </p>
+                        <p class="mb-0"><strong>Academic Year:</strong>
+                            <%= class_info.academic_year %>
+                        </p>
+                        <p class="mb-0"><strong>Time/Day:</strong>
+                            <%= class_info.time_day %>
+                        </p>
+
+
                         <ul class="nav nav-tabs nav-tabs-v2  " role="tablist">
                             <li class="nav-item me-3 " role="presentation"><a href="#enrolledStudent"
                                     class="nav-link px-2 active" data-bs-toggle="tab" aria-selected="true"
                                     role="tab">Enrolled students</a></li>
-                            <li class="nav-item me-3" role="presentation"><a href="#attendanceClassTable" class="nav-link px-2 "
-                                    data-bs-toggle="tab" aria-selected="false" role="tab" tabindex="-1">Attendance Class</a>
+                            <li class="nav-item me-3" role="presentation"><a href="#attendanceClassTable"
+                                    class="nav-link px-2 " data-bs-toggle="tab" aria-selected="false" role="tab"
+                                    tabindex="-1">Attendance Class</a>
                             </li>
-
+                            <li class="nav-item me-3" role="presentation"><a href="#attendanceSummaryClassTable"
+                                    class="nav-link px-2 " data-bs-toggle="tab" aria-selected="false" role="tab"
+                                    tabindex="-1">Attendance Summary</a>
+                            </li>
                         </ul>
                         <div class="tab-content">
                             <div class="tab-pane fade active show" id="enrolledStudent" role="tabpanel">
@@ -84,7 +101,7 @@
                                                         <div class="btn-group">
 
                                                             <button type="button"
-                                                                onclick="deleteById('<%= student.student_id %>','          <%= student.name %>')"
+                                                                onclick="deleteById('<%= student.student_id %>','<%= student.name %>')"
                                                                 class="btn btn-default"><i
                                                                     class="fas fa-fw fa-trash-alt"></i></button>
 
@@ -98,6 +115,16 @@
                             </div>
                             <div class="tab-pane fade " id="attendanceClassTable" role="tabpanel">
                                 <h4 class="mt-3"></h4>
+                                <div class="mb-3">
+
+                                    <div id="advance-daterange" class="btn btn-theme text-start">
+                                        <span class="text-truncate">&nbsp;</span>
+                                        <i class="fa fa-caret-down ms-auto"></i>
+                                    </div>
+                                    <button class="btn btn-secondary" id="downloadReport"
+                                        onclick="downloadReport(event,'<%= class_info.class_id %>')">Download
+                                        Report</button>
+                                </div>
                                 <div class="table-responsive">
                                     <table class="table table-bordered" id="viewAttendanceTable" style="width: 100%;">
                                         <thead>
@@ -105,15 +132,15 @@
                                                 <th>#</th>
                                                 <th>Student Number</th>
                                                 <th>Name</th>
-                                            
+
                                                 <th>Attendance Date</th>
                                                 <th>Status</th>
                                                 <th>Logs</th>
-                                          
+
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <% student_attendance.forEach((student, index) => { %>
+                                            <% student_attendance.forEach((student, index)=> { %>
                                                 <tr>
                                                     <td>
                                                         <%= index + 1 %>
@@ -124,30 +151,83 @@
                                                     <td>
                                                         <%= student.name %>
                                                     </td>
-                                                  
+
                                                     <td>
-                                                        <%= student.log_date ? new Date(student.log_date).toLocaleDateString('en-US', {
-                                                            year: 'numeric',
-                                                            month: 'long',
-                                                            day: 'numeric'
-                                                        }) : 'N/A' %> <!-- Attendance date -->
+                                                        <%= student.log_date ? new
+                                                            Date(student.log_date).toLocaleDateString('en-US', {
+                                                            year: 'numeric' , month: 'long' , day: 'numeric' }) : 'N/A'
+                                                            %>
                                                     </td>
-                                                    
                                                     <td>
-                                                        <span class="<%= student.status === 'Present' ? 'text-success' : student.status === 'Absent' ? 'text-danger' : '' %>">
+                                                        <span
+                                                            class="<%= student.status === 'Present' ? 'text-success' : student.status === 'Absent' ? 'text-danger' : '' %>">
                                                             <%= student.status || 'N/A' %>
                                                         </span> <!-- Attendance status -->
                                                     </td>
                                                     <td>
                                                         <%= student.logs || 'N/A' %> <!-- Attendance logs -->
                                                     </td>
-                                                  
+
                                                 </tr>
-                                            <% }) %>
+                                                <% }) %>
                                         </tbody>
                                     </table>
                                 </div>
-                                
+
+                            </div>
+                            <div class="tab-pane fade " id="attendanceSummaryClassTable" role="tabpanel">
+                                <h4 class="mt-3"></h4>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered" id="viewAttendanceSummaryTable"
+                                        style="width: 100%;">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Student Number</th>
+                                                <th>Name</th>
+
+                                                <th>Number of Present</th>
+                                                <th>Number of Absent</th>
+
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% attendance_summary.forEach((student, index)=> { %>
+                                                <tr>
+                                                    <td>
+                                                        <%= index + 1 %>
+                                                    </td>
+                                                    <td>
+                                                        <%= student.student_id %>
+                                                    </td>
+                                                    <td>
+                                                        <%= student.name %>
+                                                    </td>
+
+                                                    <td>
+                                                        <%= student.present_count %>
+                                                    </td>
+                                                    <td>
+                                                        <%= student.absent_count %>
+                                                    </td>
+
+                                                    <td class="text-center">
+                                                        <div class="btn-group">
+                                                            <button type="button" class="btn btn-default"
+                                                                onclick="showAttendanceHistory('<%= student.student_id %>', '<%= class_info.class_id %>', '<%= student.name %>', '<%=class_info.subject_name%>')">
+                                                                <i class="fa fa-history"></i> History Details
+                                                            </button>
+                                                        </div>
+                                                    </td>
+
+
+                                                </tr>
+                                                <% }) %>
+                                        </tbody>
+                                    </table>
+                                </div>
+
                             </div>
                         </div>
 
@@ -157,44 +237,96 @@
         </div>
         <!-- Modal -->
         <div class="modal fade" id="addUser" tabindex="-1" aria-labelledby="addUser" aria-hidden="true">
-            <div class="modal-dialog ">
-
-                <form class="add-class-student-validation" method="POST">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="addUser">Add New Student</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="row">
+            <div class="modal-dialog">
 
 
-                                <div class="mb-2">
-                                    <label for="student_id" class="form-label">Student ID</label>
-                                    <input type="hidden" name="class_id" id="class_id"
-                                        value="<%= class_info.class_id %>">
-                                    <input class="form-control" type="text" name="student_id" id="student_id" required>
-                                    <div id="error-upload-message" class="mt-2"></div>
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="addUser">Enroll New Student</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <!-- Choice for Single Data or Excel Upload -->
+                            <div class="col-12 mb-3">
+                                <div class="text-center">
+                                    <div class="btn-group" role="group" aria-label="Input Method">
+                                        <input type="radio" class="btn-check" name="inputOption" id="singleDataOption"
+                                            value="single" autocomplete="off" checked>
+                                        <label class="btn btn-outline-primary" for="singleDataOption">Single
+                                            Data Only</label>
+
+                                        <input type="radio" class="btn-check" name="inputOption" id="excelUploadOption"
+                                            value="excel" autocomplete="off">
+                                        <label class="btn btn-outline-primary" for="excelUploadOption">Upload Excel
+                                            (Multiple Data)</label>
+                                    </div>
                                 </div>
-
-
-
-
                             </div>
-                        </div>
 
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary" id="submit-button">Insert
-                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
-                                    style="display: none;"></span>
-                            </button>
+                            <!-- Single Data Form -->
+                            <div class="col-lg-12" id="singleDataForm">
+                                <form class="add-class-student-validation" method="POST">
+                                    <div class="mb-2">
+                                        <label for="student_id" class="form-label">Student ID</label>
+                                        <input type="hidden" name="class_id" id="class_id"
+                                            value="<%= class_info.class_id %>">
+                                        <input class="form-control" type="text" name="student_id" id="student_id"
+                                            required>
+                                        <div id="error-upload-message" class="mt-2"></div>
+                                        <button type="submit" class="btn btn-primary" id="submit-button">Save
+                                            <span class="spinner-border spinner-border-sm" role="status"
+                                                aria-hidden="true" style="display: none;"></span>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- Excel Upload Form (hidden by default) -->
+                            <div class="col-lg-12" id="excelUploadForm" style="display: none;">
+                                <div class="excel-container">
+                                    <p><strong>How to Use:</strong></p>
+                                    <ul>
+                                        <li>Download the <a href="/document/sample_template_class.xlsx" download>sample
+                                                template</a>.</li>
+                                        <li>Ensure each row corresponds to a record, with columns like "Student ID".
+                                        </li>
+                                        <li>Save the file in .xlsx format and upload it here.</li>
+                                    </ul>
+                                    <div class="excel-img-container text-center mt-2">
+                                        <img src="/images/excel-class.png" alt="" class="img-fluid mx-auto d-block">
+                                        <small class="fst-italic">Example of Excel Format</small>
+                                    </div>
+
+                                    <div class="excel-form mt-3">
+                                        <form action="/faculty/upload_excel/students" enctype="multipart/form-data"
+                                            method="post" id="uploadExcelForm">
+                                            <input type="hidden" name="class_id" id="class_id"
+                                                value="<%= class_info.class_id %>">
+                                            <input type="file" name="import-excel"
+                                                accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+                                                class="form-control" required>
+                                            <div id="error-upload-message-2" class="mt-2"></div>
+                                            <button type="submit" class="btn btn-success mt-2" id="upload-button">
+                                                <span class="spinner-border spinner-border-sm" role="status"
+                                                    aria-hidden="true" style="display: none;"></span> Upload
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                </form>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+                    </div>
+                </div>
+
             </div>
         </div>
+
         <div class="modal fade" id="modal-delete" tabindex="-1" aria-labelledby="modal-delete" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -223,8 +355,136 @@
                 </div>
             </div>
         </div>
+
+        <div class="modal fade" id="modal-show" tabindex="-1" aria-labelledby="modal-show" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+
+
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modal-title-student-attendance">Attendance History</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="viewAttendanceTableStudent" style="width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+
+                                        <th>Attendance Date</th>
+                                        <th>Status</th>
+                                        <th>Logs</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
     </div>
     <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const singleDataOption = document.getElementById("singleDataOption");
+            const excelUploadOption = document.getElementById("excelUploadOption");
+
+            const singleDataForm = document.getElementById("singleDataForm");
+            const excelUploadForm = document.getElementById("excelUploadForm");
+
+            // Toggle forms based on selected option
+            singleDataOption.addEventListener("change", function () {
+                if (this.checked) {
+                    singleDataForm.style.display = "block";
+                    excelUploadForm.style.display = "none";
+                }
+            });
+
+            excelUploadOption.addEventListener("change", function () {
+                if (this.checked) {
+                    singleDataForm.style.display = "none";
+                    excelUploadForm.style.display = "block";
+                }
+            });
+        });
+
+    </script>
+    <script>
+        function showAttendanceHistory(student_id, class_id, name,subject_name) {
+            document.getElementById("modal-title-student-attendance").innerText = `Attendance History of ${name}`;
+
+            // Function to initialize DataTable
+            function initializeDataTable(student_id, class_id) {
+                // Initialize DataTable only if it hasn't been initialized
+                if (!$.fn.dataTable.isDataTable('#viewAttendanceTableStudent')) {
+                    table = $("#viewAttendanceTableStudent").DataTable({
+                        processing: true,
+                        dom: 'Bfrtip', // Specify the placement of the buttons
+        buttons: [
+           
+            {
+                extend: 'excel',
+                text: 'Download Excel',
+                messageTop: `Attendance Data: ${name} (${student_id})\nSubject: ${subject_name}`,
+                title: `Mariano Marcos State University`,// Set title for the Excel file
+                filename: `Attendance Data: ${name} (${student_id})\nSubject: ${subject_name}`,
+            },
+            {
+                extend: 'pdf',
+                text: 'Download PDF',
+                title: 'Attendance Data', // Set title for the PDF file
+                orientation: 'portrait',
+                pageSize: 'A4'
+            },
+      
+        ],
+                        ajax: {
+                            url: `/faculty/attendance/${class_id}/${student_id}/`,
+                            type: "GET",
+                            dataSrc: function (response) {
+                                console.log("AJAX Response:", response);
+                                return response.data || []; // Ensure `data` is the correct path
+                            },
+                        },
+                        columns: [
+                            { data: 'attendance_id' },
+                            { data: 'log_date' },
+                            {
+                                data: 'status',
+                                render: function (data, type, row) {
+                                    // Set the class based on the status
+                                    const statusClass = data === 'Present' ? 'text-success' : data === 'Absent' ? 'text-danger' : '';
+                                    return `<span class="${statusClass}">${data || 'N/A'}</span>`;
+                                }
+                            },
+                            { data: 'logs' },
+                        ],
+                    });
+                } else {
+                    // If DataTable is already initialized, update the URL and reload data
+                    table.ajax.url(`/faculty/attendance/${class_id}/${student_id}/`).load();
+                }
+            }
+
+            initializeDataTable(student_id, class_id)
+            // Show the modal using Bootstrap 5 API
+            const modal = new bootstrap.Modal(
+                document.getElementById("modal-show")
+            );
+
+            modal.show();
+        }
+
+
+
         function deleteById(name, id) {
             document.getElementById("delete_name").innerText = id;
             document.getElementById("delete-id").value = name;
@@ -313,6 +573,8 @@
 
 
         });
+
+
     </script>
     <script>
         !(function () {
@@ -427,24 +689,179 @@
             $(document).ready(() => e.init());
         })();
 
+
+
+
+        var table = $("#viewAttendanceSummaryTable").DataTable({
+
+
+        })
+    </script>
+
+    <script>
+        document
+            .getElementById("uploadExcelForm")
+            .addEventListener("submit", async function (event) {
+                event.preventDefault(); // Prevent the form from submitting the traditional way
+                const submitButton = document.getElementById("upload-button");
+                const spinner = submitButton.querySelector(".spinner-border");
+                const errorMessageDiv = document.getElementById("error-upload-message-2");
+                // Show spinner and disable button
+                spinner.style.display = "inline-block";
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>Uploading...';
+                const form = event.target;
+                const formData = new FormData(form);
+                try {
+                    const response = await fetch("/faculty/upload_excel/students", {
+                        method: "POST",
+                        body: formData,
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        // Close the modal
+                        const modal = bootstrap.Modal.getInstance(
+                            document.getElementById("addUser")
+                        );
+                        modal.hide();
+
+                        $.notify({
+                            type: "success",
+                            icon: "fa fa-check me-1",
+                            message: data.message,
+                        }, {
+                            type: "success",
+                            allow_dismiss: false,
+                        });
+                        form.reset();
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 2000);
+                    } else {
+                        errorMessageDiv.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
+
+                    }
+                } catch (error) {
+                    $.notify(
+                        {
+                            icon: "fa fa-times-circle me-1",
+                            message: "An error occurred. Please try again.",
+                        },
+                        {
+                            type: "danger",
+                        }
+                    );
+                    console.error("Error:", error);
+                } finally {
+                    spinner.style.display = "none";
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true" style="display: none;"></span>Upload';
+                }
+            });
+    </script>
+
+    <script>
+        // Get the start and end dates for the last 30 days
+        let start = moment().subtract(30, 'days');
+        let end = moment();
+
+        // Format start and end dates for database or API usage
+        let startDate = start.format('YYYY-MM-DD');
+        let endDate = end.format('YYYY-MM-DD');
+
+        // Create an array of formatted dates
+        let selectedDate = [startDate, endDate];
+
+        async function downloadReport(event) {
+            event.preventDefault();  // Prevent the default action (which is a regular link click)
+            window.location.href = "/download-report?startDate=" + selectedDate[0] + "&endDate=" + selectedDate[1] + "&class_id=" + <%= class_info.class_id %>;
+           
+
+        }
+
+
+        var handleDateRangePicker = function () {
+
+            $('#advance-daterange span').html(
+                moment().subtract(30, 'days').format('MMMM D, YYYY') + ' - ' + moment().format('MMMM D, YYYY')
+            );
+
+
+            // Initialize another Date Range Picker
+            $('#advance-daterange').daterangepicker({
+                format: 'MM/DD/YYYY',
+                startDate: moment().subtract(29, 'days'),
+                endDate: moment(),
+
+                dateLimit: { days: 60 },
+                showDropdowns: true,
+                showWeekNumbers: true,
+                timePicker: false,
+                timePickerIncrement: 1,
+                timePicker12Hour: true,
+                ranges: {
+                    'Today': [moment(), moment()],
+                    'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                    'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                    'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                    'This Month': [moment().startOf('month'), moment().endOf('month')],
+                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                },
+                opens: 'right',
+                drops: 'down',
+                buttonClasses: ['btn', 'btn-sm'],
+                applyClass: 'btn-primary',
+                cancelClass: 'btn-default',
+                separator: ' to ',
+                locale: {
+                    applyLabel: 'Submit',
+                    cancelLabel: 'Cancel',
+                    fromLabel: 'From',
+                    toLabel: 'To',
+                    customRangeLabel: 'Custom',
+                    daysOfWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
+                    monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                    firstDay: 1
+                }
+            }, function (start, end, label) {
+                $('#advance-daterange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+                filterByDateRange(start, end); // Call filter function when date range is selected
+            });
+        };
+
+        // Function to filter the DataTable based on the selected date range
+        function filterByDateRange(start, end) {
+            var startDate = start.format('YYYY-MM-DD');
+            var endDate = end.format('YYYY-MM-DD');
+            selectedDate = [startDate, endDate];
+            // Apply the filter to the attendance table based on the selected date range
+            table.column(3).search(function (settings, data, dataIndex) {
+                var readableDate = data[3]; // Assuming the readable date is in the 4th column (index 3)
+
+                // Convert the readable date to a Date object
+                var date = new Date(readableDate);
+                var formattedDate = date.toISOString().split('T')[0]; // Convert to 'YYYY-MM-DD' format
+
+                // Compare the formatted date with the start and end date
+                return formattedDate >= startDate && formattedDate <= endDate;
+            }).draw();
+        }
+
+
+        // Initialize the DataTable only once
+        if ($.fn.dataTable.isDataTable('#viewAttendanceTable')) {
+            $('#viewAttendanceTable').DataTable().clear().destroy();
+        }
+
+        // Initialize DataTable
         var table = $("#viewAttendanceTable").DataTable({
-        dom: 'Bfrtip', // Specify the placement of the buttons
-        buttons: [
-            'copy', 
-            {
-                extend: 'excel',
-                text: 'Download Excel',
-                title: 'Attendance Data for Class <%= class_info.class_name %>' // Set title for the Excel file
-            },
-            {
-                extend: 'pdf',
-                text: 'Download PDF',
-                title: 'Attendance Data', // Set title for the PDF file
-                orientation: 'portrait',
-                pageSize: 'A4'
-            },
-            'print' // Optionally add a print button
-        ],
-    })
+
+        });
+
+        // Call the function to initialize the date range picker
+        handleDateRangePicker();
+
 
     </script>

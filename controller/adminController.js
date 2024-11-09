@@ -165,7 +165,7 @@ const postStudentEdit = async (req, res) => {
 			.json({ success: false, message: "Failed to update student" });
 	}
 };
-const postExcelUpload = async (req, res) => {
+const postExcelUploadStudent = async (req, res) => {
 	if (req.fileValidationError) {
 		return res.status(400).json({
 			success: false,
@@ -253,6 +253,8 @@ const getAllFaculty = async (req, res) => {
 			username: data.username,
 			email: data.email,
 			profile_url: data.profile_url,
+			is_active: data.is_active,
+			registration_status: data.registration_status
 		});
 	});
 
@@ -266,8 +268,8 @@ const postAddFaculty = async (req, res) => {
 		const hashedPassword = await bcrypt.hash(password, 10);
 
 		const query_result = await query(
-			"INSERT INTO faculty (name, username, email, password, profile_url) VALUES (?, ?, ?, ?, ?)",
-			[name, username, email, hashedPassword, "default.jpg"] // Assuming profile_url can be null
+			"INSERT INTO faculty (name, username, email, password, profile_url, is_active, registration_status) VALUES (?, ?, ?, ?, ?, ?, ?)",
+			[name, username, email, hashedPassword, "default.jpg", 1, 'approved'] // Assuming profile_url can be null
 		);
 		return res.json({
 			success: true,
@@ -295,7 +297,7 @@ const getFacultyView = async (req, res) => {
 };
 
 const postFacultyEdit = async (req, res) => {
-	const { id, name, username, email, password } = req.body;
+	const { id, name, username, email, password, is_active, registration_status } = req.body;
 
 	try {
 		// Construct the query based on whether the password is provided or not
@@ -303,14 +305,14 @@ const postFacultyEdit = async (req, res) => {
 		if (password) {
 			// Update with the password if provided
 			query_result = await query(
-				"UPDATE faculty SET name = ?, username = ?, email = ?, password = ? WHERE id = ? ",
-				[name, username, email, password, id]
+				"UPDATE faculty SET name = ?, username = ?, email = ?,is_active = ?, registration_status = ? password = ? WHERE id = ? ",
+				[name, username, email,is_active, registration_status, password, id]
 			);
 		} else {
 			// Update without changing the password
 			query_result = await query(
-				"UPDATE faculty SET name = ?, username = ?, email = ? WHERE id = ?",
-				[name, username, email, id]
+				"UPDATE faculty SET name = ?, username = ?, email = ?, is_active = ?, registration_status = ? WHERE id = ?",
+				[name, username, email, is_active, registration_status, id]
 			);
 		}
 
@@ -363,6 +365,10 @@ const getAllSubjects = async (req, res) => {
 			subject_name: data.subject_name,
 			subject_code: data.subject_code,
 			description: data.description,
+			semester: data.semester,
+			academic_year: data.academic_year,
+			time_day: data.time_day,
+			type: data.type,
 			created_at: data.created_at,
 		});
 	});
@@ -371,45 +377,111 @@ const getAllSubjects = async (req, res) => {
 };
 
 const postAddSubject = async (req, res) => {
-	const { subject_name, subject_code, description } = req.body;
+    const { subject_name, subject_code, description, semester, academic_year, time_day, type } = req.body;
 
-	try {
-		const query_result = await query(
-			"INSERT INTO subjects (subject_name, subject_code, description) VALUES (?, ?, ?)",
-			[subject_name, subject_code, description]
-		);
-		return res.json({
-			success: true,
-			message: "Subject added successfully",
-		});
-	} catch (err) {
-		console.error(err);
-		return res
-			.status(500)
-			.json({ success: false, message: "Failed to add subject" });
-	}
+    try {
+        const query_result = await query(
+            "INSERT INTO subjects (subject_name, subject_code, description, semester, academic_year, time_day, type) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            [subject_name, subject_code, description, semester, academic_year, time_day, type]
+        );
+        return res.json({
+            success: true,
+            message: "Subject added successfully",
+        });
+    } catch (err) {
+        console.error(err);
+        return res
+            .status(500)
+            .json({ success: false, message: "Failed to add subject" });
+    }
 };
+
 
 const postSubjectEdit = async (req, res) => {
-	const { subject_id, subject_name, subject_code, description } = req.body;
+    const { subject_id, subject_name, subject_code, description, semester, academic_year, time_day, type } = req.body;
 
-	try {
-		const query_result = await query(
-			"UPDATE subjects SET subject_name = ?, subject_code = ?, description = ? WHERE subject_id = ?",
-			[subject_name, subject_code, description, subject_id]
-		);
+    try {
+        const query_result = await query(
+            "UPDATE subjects SET subject_name = ?, subject_code = ?, description = ?, semester = ?, academic_year = ?, time_day = ?, type = ? WHERE subject_id = ?",
+            [subject_name, subject_code, description, semester, academic_year, time_day, type, subject_id]
+        );
 
-		return res.json({
-			success: true,
-			message: "Subject updated successfully",
-		});
-	} catch (err) {
-		console.error(err);
-		return res
-			.status(500)
-			.json({ success: false, message: "Failed to update subject" });
-	}
+        return res.json({
+            success: true,
+            message: "Subject updated successfully",
+        });
+    } catch (err) {
+        console.error(err);
+        return res
+            .status(500)
+            .json({ success: false, message: "Failed to update subject" });
+    }
 };
+const postExcelUploadSubjects = async (req, res) => {
+    if (req.fileValidationError) {
+        return res.status(400).json({
+            success: false,
+            message: req.fileValidationError,
+        });
+    }
+
+    const filePath = `public/document/${req.file.filename}`;
+
+    // Import Excel Data to MySQL database
+    readXlsxFile(filePath)
+        .then((rows) => {
+            // Remove Header ROW
+            rows.shift();
+
+            // MySQL query to insert subject data (without created_at and updated_at)
+            const query =
+                "INSERT INTO subjects (subject_name, subject_code, description, semester, academic_year, time_day, type) VALUES ?";
+
+            // Prepare data to be inserted (without created_at and updated_at)
+            const formattedRows = rows.map(row => [
+                row[0], // subject_name
+                row[1], // subject_code
+                row[2], // description
+                row[3], // semester
+                row[4], // academic_year
+                row[5], // time_day
+                row[6], // type
+            ]);
+
+            db.query(query, [formattedRows], (error, response) => {
+                if (error) {
+                    // Clean up the file if there's an error
+                    fs.unlink(filePath, (err) => {
+                        if (err) console.log(err);
+                    });
+
+                    return res.status(500).json({
+                        success: false,
+                        message: `Error inserting data: ${error.message}`,
+                    });
+                }
+
+                // Clean up the uploaded file
+                fs.unlink(filePath, (err) => {
+                    if (err) console.log(err);
+                });
+
+                // Respond with success
+                return res.status(200).json({
+                    success: true,
+                    message: "Subjects data successfully uploaded",
+                });
+            });
+        })
+        .catch((error) => {
+            // Handle file reading errors
+            return res.status(500).json({
+                success: false,
+                message: `Error reading file: ${error.message}`,
+            });
+        });
+};
+
 
 const deleteSubject = async (req, res) => {
 	const { id } = req.body; // Assuming subject_id is passed in the request body
@@ -694,7 +766,7 @@ export default {
 	getStudent,
 	getAllStudent,
 	postAddStudent,
-	postExcelUpload,
+	postExcelUploadStudent,
 	getStudentView,
 	postStudentEdit,
 	deleteStudent,
@@ -711,7 +783,7 @@ export default {
 	getSubjects,
 	getAllSubjects,
 	postAddSubject,
-
+	postExcelUploadSubjects,
 	postSubjectEdit,
 	deleteSubject,
 	getClasses,

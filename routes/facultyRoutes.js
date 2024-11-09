@@ -106,6 +106,14 @@ router.post(
 );
 
 router.post(
+	"/upload_excel/students",
+	auth.requireAuth,
+	auth.checkRole(["faculty"]),
+	excelUpload.single("import-excel"),
+	facultyController.postExcelEnrollStudent
+);
+
+router.post(
 	"/class/remove",
 	auth.requireAuth,
 	auth.checkRole(["faculty"]),
@@ -117,6 +125,13 @@ router.get(
 	auth.requireAuth,
 	auth.checkRole(["faculty"]),
 	facultyController.getAttendanceClass
+);
+
+router.get(
+	"/attendance/:class_id/:student_id/",
+	auth.requireAuth,
+	auth.checkRole(["faculty"]),
+	facultyController.getAttendanceHistoryForStudent
 );
 
 router.get(

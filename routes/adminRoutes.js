@@ -33,11 +33,11 @@ router.post(
 );
 
 router.post(
-	"/upload_excel",
+	"/upload_excel/students",
 	auth.requireAuth,
 	auth.checkRole(["admin"]),
 	excelUpload.single("import-excel"),
-	adminController.postExcelUpload
+	adminController.postExcelUploadStudent
 );
 
 router.get(
@@ -142,6 +142,14 @@ router.post(
 	auth.checkRole(["admin"]),
 	upload.none(),
 	adminController.postAddSubject // Adjusted the controller method name
+);
+
+router.post(
+	"/upload_excel/subjects",
+	auth.requireAuth,
+	auth.checkRole(["admin"]),
+	excelUpload.single("import-excel"),
+	adminController.postExcelUploadSubjects
 );
 
 router.get(

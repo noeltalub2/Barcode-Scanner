@@ -379,7 +379,7 @@ const getAttendanceClass = async (req, res) => {
 const getClasses = async (req, res) => {
 	const class_records = await query(
 		`
-		SELECT c.class_id, c.class_name, s.description, c.room_number, f.name AS faculty_name, s.subject_name
+		SELECT c.class_id, c.class_name, s.description, c.room_number, f.name AS faculty_name, s.subject_name, s.subject_code,s.time_day, s.type,semester, s.academic_year
 		FROM classes c
 		JOIN faculty f ON c.faculty_id = f.id
 		JOIN subjects s ON c.subject_id = s.subject_id
@@ -401,7 +401,7 @@ const getClassView = async (req, res) => {
 	try {
 		const class_info = (
 			await query(
-				`SELECT c.class_id, c.class_name, c.room_number, f.name AS faculty_name, s.subject_name, c.faculty_id 
+				`SELECT c.class_id, c.class_name, c.room_number, f.name AS faculty_name, s.description, s.subject_name, c.faculty_id ,s.subject_code,s.time_day, s.type,semester, s.academic_year
                  FROM classes c 
                  JOIN faculty f ON c.faculty_id = f.id 
                  JOIN subjects s ON c.subject_id = s.subject_id 
@@ -433,11 +433,17 @@ const getClassView = async (req, res) => {
 			[class_id,class_id]
 		);
 
+		const attendance_summary = await query("SELECT sc.student_id, s.name, s.email, s.degree, s.year_section, COUNT(CASE WHEN a.status = 'Present' THEN 1 END) AS present_count, COUNT(CASE WHEN a.status = 'Absent' THEN 1 END) AS absent_count FROM student_class sc JOIN student s ON sc.student_id = s.student_id LEFT JOIN attendance a ON sc.student_id = a.student_id AND a.class_id = sc.class_id WHERE sc.class_id = ? GROUP BY sc.student_id;",
+			[class_id]
+		);
+
+		
+
 		res.render("Faculty/class_view", {
 			title: "View Class",
 			page: "class",
 			class_info,
-			student_class,student_attendance
+			student_class,student_attendance,attendance_summary
 		});
 	} catch (err) {
 		console.error(err);
@@ -447,6 +453,60 @@ const getClassView = async (req, res) => {
 		});
 	}
 };
+
+const getAttendanceHistoryForStudent = async (req, res) => {
+	const { class_id, student_id } = req.params;
+  
+	try {
+	  const student_attendance_history = await query(
+		`
+		SELECT 
+		  sc.student_id, 
+		  s.name, 
+		  s.email, 
+		  s.degree, 
+		  s.year_section, 
+		  a.attendance_id, 
+		  a.log_date, 
+		  a.status, 
+		  a.logs 
+		FROM 
+		  student_class sc 
+		JOIN 
+		  student s ON sc.student_id = s.student_id 
+		JOIN 
+		  attendance a ON sc.student_id = a.student_id 
+		WHERE 
+		  sc.class_id = ? 
+		  AND a.class_id = ? 
+		  AND sc.student_id = ?;
+		`,
+		[class_id, class_id, student_id]  // Pass class_id and student_id for filtering
+	  );
+  
+	  // Map the results to the desired output format for DataTables
+	  const resultData = student_attendance_history.map((data, index) => ({
+		attendance_id: index + 1,
+		
+		log_date: new Date(data.log_date).toLocaleDateString("en-US", {
+		  year: "numeric",
+		  month: "long",
+		  day: "numeric",
+		}),
+		status: data.status,
+		logs: data.logs,
+	  }));
+  
+	  res.json({ data: resultData });
+	} catch (error) {
+	  console.error("Error fetching student attendance history:", error);
+	  res.status(500).json({
+		status: "error",
+		message: "Internal server error",
+	  });
+	}
+  };
+  
 
 const postEnrollStudent = async (req, res) => {
 	const { student_id, class_id } = req.body;
@@ -483,6 +543,79 @@ const postEnrollStudent = async (req, res) => {
 			.json({ success: false, message: "Failed to enroll student" });
 	}
 };
+
+const postExcelEnrollStudent = async (req, res) => {
+	if (req.fileValidationError) {
+	  return res.status(400).json({
+		success: false,
+		message: req.fileValidationError,
+	  });
+	}
+  
+	const filePath = `public/document/${req.file.filename}`;
+  
+	// Import Excel Data to MySQL database
+	readXlsxFile(filePath)
+	  .then(async (rows) => {
+		// Remove Header ROW
+		rows.shift();
+  
+		// Prepare an array for inserting records
+		const enrollments = [];
+		const errors = [];
+  
+		// Loop through each row of student data
+		for (const row of rows) {
+		  const [student_id, name, email, degree, year_section] = row;
+  
+		  // Check if the student is already enrolled in the class
+		  const existingEnrollment = await query(
+			"SELECT COUNT(*) as count FROM student_class WHERE student_id = ? AND class_id = ?",
+			[student_id, req.body.class_id] // Assuming class_id is passed in the body
+		  );
+  
+		  if (existingEnrollment[0].count > 0) {
+			errors.push(`Student with ID ${student_id} is already enrolled. <br>`);
+		  } else {
+			// Add to the enrollment array for bulk insert
+			enrollments.push([student_id, req.body.class_id, res.locals.user.id]);
+		  }
+		}
+  
+		// Insert new enrollments if there are any valid enrollments
+		if (enrollments.length > 0) {
+		  const insertQuery =
+			"INSERT INTO student_class (student_id, class_id, faculty_id) VALUES ?";
+		  await query(insertQuery, [enrollments]);
+		}
+  
+		// Clean up the uploaded file
+		fs.unlink(filePath, (err) => {
+		  if (err) console.log(err); // Handle file deletion error, if any
+		});
+  
+		// Respond with success or errors
+		if (errors.length > 0) {
+		  return res.status(400).json({
+			success: false,
+			message: `There was an error: <br>${errors.join("")}`,
+		  });
+		}
+  
+		return res.status(200).json({
+		  success: true,
+		  message: "Students data successfully uploaded and enrolled",
+		});
+	  })
+	  .catch((error) => {
+		// Handle file reading errors
+		return res.status(500).json({
+		  success: false,
+		  message: `Error reading file: ${error.message}`,
+		});
+	  });
+  };
+  
 
 const removeStudent = async (req, res) => {
 	const { student_id, class_id } = req.body;
@@ -560,7 +693,7 @@ export default {
 	postAttendance,
 	getClasses,
 	getClassView,
-	postEnrollStudent,
+	postEnrollStudent,postExcelEnrollStudent,getAttendanceHistoryForStudent,
 	removeStudent,getAttendanceClass,getProfile,
 	postProfile
 };

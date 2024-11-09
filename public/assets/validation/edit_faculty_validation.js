@@ -65,6 +65,12 @@
 						required: false,
 						equalTo: "#edit-password",
 					},
+					is_active: {
+						required: true,
+					},
+					registration_status: {
+						required: true,
+					}
 				},
 				messages: {
 					name: {
@@ -92,6 +98,12 @@
 						required: "Please confirm your password",
 						equalTo: "Passwords do not match",
 					},
+					is_active: {
+						required: "Please select a status",
+					},
+					registration_status: {
+						required: "Please select a status",
+					}
 				},
 				submitHandler: function (form) {
 					const submitButton =

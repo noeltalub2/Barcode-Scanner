@@ -55,10 +55,7 @@
                         required: true,
                         minlength: 6,
                     },
-                    confirm_password: {
-                        required: true,
-                        equalTo: "#password",
-                    },
+                 
                 },
                 messages: {
                     name: {
@@ -79,10 +76,7 @@
                         required: "Please provide a password",
                         minlength: "Your password must be at least 6 characters long",
                     },
-                    confirm_password: {
-                        required: "Please confirm your password",
-                        equalTo: "Passwords do not match",
-                    },
+                
                 },
                 submitHandler: function (form) {
                     const submitButton = document.getElementById("submit-button");

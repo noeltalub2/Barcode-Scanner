@@ -29,9 +29,14 @@
                                     <th>Subject Name</th>
                                     <th>Subject Code</th>
                                     <th>Description</th>
+                                    <th>Semester</th>
+                                    <th>A.Y.</th>
+                                    <th>Time/Day</th>
+                                    <th>Type</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
+                            
                         </table>
                     </div>
                 </div>
@@ -39,72 +44,185 @@
         </div>
     </div>
 
-    <!-- Modal for Adding Subject -->
-    <div class="modal fade" id="addSubject" tabindex="-1" aria-labelledby="addSubjectLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <form class="add-subject-validation" method="POST">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="addSubjectLabel">Add New Subject</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="mb-2">
-                            <label for="subjectName" class="form-label">Subject Name</label>
-                            <input class="form-control" type="text" name="subject_name" id="subjectName" required autofocus>
-                        </div>
-                        <div class="mb-2">
-                            <label for="subjectCode" class="form-label">Subject Code</label>
-                            <input class="form-control" type="text" name="subject_code" id="subjectCode" required>
-                        </div>
-                        <div class="mb-2">
-                            <label for="subjectDescription" class="form-label">Description</label>
-                            <textarea class="form-control" name="description" id="subjectDescription" required></textarea>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary" id="submit-button">Save
-                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
-                        </button>
-                    </div>
+<!-- Modal for Adding Subject -->
+<div class="modal fade" id="addSubject" tabindex="-1" aria-labelledby="addSubjectLabel" aria-hidden="true">
+    <div class="modal-dialog">
+       
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="addSubjectLabel">Add New Subject</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-            </form>
-        </div>
-    </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <!-- Choice for Single Data or Excel Upload -->
+                        <div class="col-12 mb-3">
+                            <div class="text-center">
+                                <div class="btn-group" role="group" aria-label="Input Method">
+                                    <input type="radio" class="btn-check" name="inputOption" id="singleDataOption"
+                                           value="single" autocomplete="off" checked>
+                                    <label class="btn btn-outline-primary" for="singleDataOption">Single Data Only</label>
 
-    <!-- Modal for Editing Subject -->
-    <div class="modal fade" id="editSubject" tabindex="-1" aria-labelledby="editSubjectLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <form class="edit-subject-validation" method="POST">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="editSubjectLabel">Edit Subject</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <input type="hidden" name="subject_id" id="edit-subject-id">
-                        <div class="mb-2">
-                            <label for="edit-subject-name" class="form-label">Subject Name</label>
-                            <input class="form-control" type="text" name="subject_name" id="edit-subject-name" required>
+                                    <input type="radio" class="btn-check" name="inputOption" id="excelUploadOption"
+                                           value="excel" autocomplete="off">
+                                    <label class="btn btn-outline-primary" for="excelUploadOption">Upload Excel (Multiple Data)</label>
+                                </div>
+                            </div>
                         </div>
-                        <div class="mb-2">
-                            <label for="edit-subject-code" class="form-label">Subject Code</label>
-                            <input class="form-control" type="text" name="subject_code" id="edit-subject-code" required>
+
+                        <!-- Single Data Form -->
+                        <div class="col-lg-12" id="singleDataForm">
+                            <form class="add-subject-validation" method="POST">
+                            <div class="mb-2">
+                                <label for="subjectName" class="form-label">Subject Name</label>
+                                <input class="form-control" type="text" name="subject_name" id="subjectName" required autofocus>
+                            </div>
+                            <div class="mb-2">
+                                <label for="subjectCode" class="form-label">Subject Code</label>
+                                <input class="form-control" type="text" name="subject_code" id="subjectCode" required>
+                            </div>
+                            <div class="mb-2">
+                                <label for="subjectDescription" class="form-label">Description</label>
+                                <textarea class="form-control" name="description" id="subjectDescription" required></textarea>
+                            </div>
+                            <div class="mb-2">
+                                <label for="semester" class="form-label">Semester</label>
+                                <select class="form-control" name="semester" id="semester" required>
+                                    <option value="">Select Semester</option>
+                                    <option value="1st">1st Semester</option>
+                                    <option value="2nd">2nd Semester</option>
+                                </select>
+                            </div>
+                            <div class="mb-2">
+                                <label for="academicYear" class="form-label">A.Y.</label>
+                                <input class="form-control" type="text" name="academic_year" id="academicYear" placeholder="e.g., 2023-2024" required>
+                            </div>
+                            <div class="mb-2">
+                                <label for="timeDay" class="form-label">Time/Day</label>
+                                <input class="form-control" type="text" name="time_day" id="timeDay" placeholder="e.g., Mon-Wed 10:00AM - 11:30AM" required>
+                            </div>
+                            <div class="mb-2">
+                                <label for="type" class="form-label">Type</label>
+                                <select class="form-control" name="type" id="type" required>
+                                    <option value="">Select Type</option>
+                                    <option value="Lecture">Lecture</option>
+                                    <option value="Lab">Lab</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary" id="submit-button">Save
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+                            </button>
+                        </form>
                         </div>
-                        <div class="mb-2">
-                            <label for="edit-subject-description" class="form-label">Description</label>
-                            <textarea class="form-control" name="description" id="edit-subject-description" required></textarea>
+
+                        <!-- Excel Upload Form (hidden by default) -->
+                        <div class="col-lg-12" id="excelUploadForm" style="display: none;">
+                            <div class="excel-container">
+                                <p><strong>How to Use:</strong></p>
+                                <ul>
+                                    <li>Download the <a href="/document/sample_template_subjects.xlsx" download>sample template</a>.</li>
+                                    <li>Ensure each row corresponds to a record, with columns like "Subject Name," "Subject Code," "Description," "Semester," "A.Y.," "Time/Day," and "Type".</li>
+                                    <li>Save the file in .xlsx format and upload it here.</li>
+                                </ul>
+                                <div class="excel-img-container text-center mt-2">
+                                    <img src="/images/excel-subjects.png" alt="" class="img-fluid mx-auto d-block">
+                                    <small class="fst-italic">Example of Excel Format</small>
+                                </div>
+
+                                <div class="excel-form mt-3">
+                                    <form action="/admin/upload_excel/subjects" enctype="multipart/form-data" method="post" id="uploadExcelForm">
+                                        <input type="file" name="import-excel"
+                                               accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+                                               class="form-control" required>
+                                        <div id="error-upload-message" class="mt-2"></div>
+                                        <button type="submit" class="btn btn-success mt-2" id="upload-button">
+                                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span> Upload
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary" id="edit-submit-button">Save Changes</button>
+
                     </div>
                 </div>
-            </form>
-        </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" id="submit-button">Save
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+                    </button>
+                </div>
+            </div>
+   
     </div>
+</div>
+
+
+
+  <!-- Modal for Editing Subject -->
+<div class="modal fade" id="editSubject" tabindex="-1" aria-labelledby="editSubjectLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form class="edit-subject-validation" method="POST">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="editSubjectLabel">Edit Subject</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="subject_id" id="edit-subject-id">
+                    
+                    <div class="mb-2">
+                        <label for="edit-subject-name" class="form-label">Subject Name</label>
+                        <input class="form-control" type="text" name="subject_name" id="edit-subject-name" required>
+                    </div>
+                    
+                    <div class="mb-2">
+                        <label for="edit-subject-code" class="form-label">Subject Code</label>
+                        <input class="form-control" type="text" name="subject_code" id="edit-subject-code" required>
+                    </div>
+                    
+                    <div class="mb-2">
+                        <label for="edit-subject-description" class="form-label">Description</label>
+                        <textarea class="form-control" name="description" id="edit-subject-description" required></textarea>
+                    </div>
+                    
+                    <div class="mb-2">
+                        <label for="edit-semester" class="form-label">Semester</label>
+                        <select class="form-control" name="semester" id="edit-semester" required>
+                            <option value="">Select Semester</option>
+                            <option value="1st">1st Semester</option>
+                            <option value="2nd">2nd Semester</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-2">
+                        <label for="edit-academic-year" class="form-label">A.Y.</label>
+                        <input class="form-control" type="text" name="academic_year" id="edit-academic-year" placeholder="e.g., 2023-2024" required>
+                    </div>
+                    
+                    <div class="mb-2">
+                        <label for="edit-time-day" class="form-label">Time/Day</label>
+                        <input class="form-control" type="text" name="time_day" id="edit-time-day" placeholder="e.g., Mon-Wed 10:00AM - 11:30AM" required>
+                    </div>
+                    
+                    <div class="mb-2">
+                        <label for="edit-type" class="form-label">Type</label>
+                        <select class="form-control" name="type" id="edit-type" required>
+                            <option value="">Select Type</option>
+                            <option value="Lecture">Lecture</option>
+                            <option value="Lab">Lab</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" id="edit-submit-button">Save Changes</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
 
     <!-- Modal for Deleting Subject -->
     <div class="modal fade" id="modal-delete-subject" tabindex="-1" aria-labelledby="modal-delete-subject" aria-hidden="true">
@@ -134,7 +252,31 @@
         </div>
     </div>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const singleDataOption = document.getElementById("singleDataOption");
+        const excelUploadOption = document.getElementById("excelUploadOption");
 
+        const singleDataForm = document.getElementById("singleDataForm");
+        const excelUploadForm = document.getElementById("excelUploadForm");
+
+        // Toggle forms based on selected option
+        singleDataOption.addEventListener("change", function () {
+            if (this.checked) {
+                singleDataForm.style.display = "block";
+                excelUploadForm.style.display = "none";
+            }
+        });
+
+        excelUploadOption.addEventListener("change", function () {
+            if (this.checked) {
+                singleDataForm.style.display = "none";
+                excelUploadForm.style.display = "block";
+            }
+        });
+    });
+
+</script>
 <script>
     // Function to delete subject by ID
     function deleteSubjectById(name, id) {
@@ -208,13 +350,21 @@
             { 'data': 'subject_name' },
             { 'data': 'subject_code' },
             { 'data': 'description' },
+            { 'data': 'semester' },
+            { 'data': 'academic_year' },
+            { 'data': 'time_day' },
+            { 'data': 'type' },
             {
                 'data': null,
                 'render': function (data) {
                     return `<div class="text-center">
                         <div class="btn-group">
-                            <button type="button" onclick="editSubjectById('${data.subject_id}', '${data.subject_name}', '${data.subject_code}', '${data.description}')" class="btn btn-default" data-bs-toggle="modal" data-bs-target="#editSubject">     <i class="fas fa-fw fa-edit"></i> </button>
-                            <button type="button" onclick="deleteSubjectById('${data.subject_name}', '${data.subject_id}')" class="btn btn-default">  <i class="fas fa-fw fa-trash-alt"></i></button>
+                            <button type="button" onclick="editSubjectById('${data.subject_id}', '${data.subject_name}', '${data.subject_code}', '${data.description}', '${data.semester}', '${data.academic_year}', '${data.time_day}', '${data.type}')" class="btn btn-default" data-bs-toggle="modal" data-bs-target="#editSubject">
+                                <i class="fas fa-fw fa-edit"></i>
+                            </button>
+                            <button type="button" onclick="deleteSubjectById('${data.subject_name}', '${data.subject_id}')" class="btn btn-default">
+                                <i class="fas fa-fw fa-trash-alt"></i>
+                            </button>
                         </div>
                     </div>`;
                 },
@@ -223,12 +373,76 @@
     });
 
     // Edit subject function
-    function editSubjectById(id, name, code, description) {
+    function editSubjectById(id, name, code, description, semester, academicYear, timeDay, type) {
         document.getElementById("edit-subject-id").value = id;
         document.getElementById("edit-subject-name").value = name;
         document.getElementById("edit-subject-code").value = code;
         document.getElementById("edit-subject-description").value = description;
+        document.getElementById("edit-semester").value = semester;
+        document.getElementById("edit-academic-year").value = academicYear;
+        document.getElementById("edit-time-day").value = timeDay;
+        document.getElementById("edit-type").value = type;
     }
+</script>
+<script>
+    document.getElementById("uploadExcelForm").addEventListener("submit", async function (event) {
+        event.preventDefault(); // Prevent the form from submitting the traditional way
+        const submitButton = document.getElementById("upload-button");
+        const spinner = submitButton.querySelector(".spinner-border");
+        const errorMessageDiv = document.getElementById("error-upload-message");
 
-    
+        // Show spinner and disable button
+        spinner.style.display = "inline-block";
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>Uploading...';
+
+        const form = event.target;
+        const formData = new FormData(form);
+
+        try {
+            // Send the form data to the server using fetch
+            const response = await fetch("/admin/upload_excel/subjects", {
+                method: "POST",
+                body: formData,
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                // Close the modal after successful upload
+                const modal = bootstrap.Modal.getInstance(document.getElementById("addSubject"));
+                modal.hide();
+
+                // Display success notification
+                $.notify({
+                    type: "success",
+                    icon: "fa fa-check me-1",
+                    message: data.message,
+                }, {
+                    type: "success",
+                    allow_dismiss: false,
+                });
+                form.reset();
+                // Reload table or other content
+                table.ajax.reload(null, false);
+            } else {
+                // Display error message if something went wrong
+                errorMessageDiv.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
+            }
+        } catch (error) {
+            // Handle unexpected errors
+            $.notify({
+                icon: "fa fa-times-circle me-1",
+                message: "An error occurred. Please try again.",
+            }, {
+                type: "danger",
+            });
+            console.error("Error:", error);
+        } finally {
+            // Hide the spinner and re-enable the button
+            spinner.style.display = "none";
+            submitButton.disabled = false;
+            submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true" style="display: none;"></span>Upload';
+        }
+    });
 </script>

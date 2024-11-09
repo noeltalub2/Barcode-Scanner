@@ -31,14 +31,12 @@
 							<div class="d-flex align-items-center justify-content-center">
 								<div class="me-1">
 									<img src="/assets/img/mmsu_logo.png" alt="mmsu logo" width="50">
-
 								</div>
 								<div>
 									<img src="/assets/img/logo.png" alt="cit logo" width="50">
 								</div>
 							</div>
 						</a>
-
 
 						<h1>Sign In As Faculty</h1>
 					</div>
@@ -52,10 +50,7 @@
 							name="username" placeholder="Enter username or email address">
 					</div>
 					<div class="mb-3">
-
 						<label class="form-label">Password</label>
-
-
 						<input type="password" class="form-control form-control-lg fs-15px" value="" name="password"
 							placeholder="Enter your password">
 						<% if(error_msg !='' ){ %>
@@ -66,11 +61,18 @@
 					</div>
 
 					<button type="submit" class="btn btn-theme btn-lg d-block w-100 fw-500 mb-3">Sign In</button>
+
+
+					<!-- BEGIN registration option -->
+					<div class="mt-3 text-center">
+						<p>Don't have an account? <a href="/register" class="btn-link">Register Now</a></p>
+					</div>
 					<div class="mt-2 text-center">
 						<a href="/signin/admin">Login as Administrator</a>
 					</div>
-				</form>
 
+					<!-- END registration option -->
+				</form>
 			</div>
 			<!-- END login-content -->
 		</div>
@@ -79,10 +81,8 @@
 		<!-- BEGIN btn-scroll-top -->
 		<a href="#" data-click="scroll-top" class="btn-scroll-top fade"><i class="fa fa-arrow-up"></i></a>
 		<!-- END btn-scroll-top -->
-		<!-- BEGIN theme-panel -->
-
-		<!-- END theme-panel -->
 	</div>
+
 	<!-- END #app -->
 
 	<!-- ================== BEGIN core-js ================== -->
