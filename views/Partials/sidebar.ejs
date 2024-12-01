@@ -74,19 +74,14 @@
                             <span class="menu-text">Manage Student</span>
                         </a>
                     </div> -->
-                    <div class="menu-item <%= page == 'class' ? 'active' : '' %>">
+                    <div class="menu-item <%= page == 'class' || page == 'attendance' ? 'active' : '' %>">
                         <a href="/faculty/class" class="menu-link">
                             <span class="menu-icon"><i class="fa fa-chalkboard-teacher"></i></span>
                             <span class="menu-text">Classes</span>
                         </a>
                     </div>
 
-                    <div class="menu-item <%= page == 'attendance' ? 'active' : '' %>">
-                        <a href="/faculty/record-attendance" class="menu-link">
-                            <span class="menu-icon"><i class="fa fa-check-circle"></i></span>
-                            <span class="menu-text"> Record Attendance</span>
-                        </a>
-                    </div>
+            
 
                     <div class="menu-item <%= page == 'profile' ? 'active' : '' %>">
                         <a href="/faculty/profile" class="menu-link">

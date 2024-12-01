@@ -232,21 +232,27 @@ const deleteStudent = async (req, res) => {
 };
 
 const getAttendance = async (req, res) => {
+	const {class_id} = req.query
 	const class_records = await query(
 		`
 		SELECT c.class_id, c.class_name, c.room_number, f.name AS faculty_name, s.subject_name
 		FROM classes c
 		JOIN faculty f ON c.faculty_id = f.id
 		JOIN subjects s ON c.subject_id = s.subject_id
-		WHERE c.faculty_id = ?
+		WHERE c.faculty_id = ? AND c.class_id = ?
 	`,
-		[res.locals.user.id]
+		[res.locals.user.id, class_id]
 	);
+	
+	if (class_records.length === 0) {
+		return res.redirect("/faculty/class")
+	}
 
 	res.render("Faculty/attendance", {
 		title: "Record Attendance",
 		page: "attendance",
 		class_records,
+		class_id
 	});
 };
 const postAttendance = async (req, res) => {

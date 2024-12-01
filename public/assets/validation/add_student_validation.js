@@ -116,7 +116,7 @@
 							spinner.style.display = "none";
 							submitButton.disabled = false;
 							submitButton.innerHTML =
-								'<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true" style="display: none;"></span>Insert';
+								'<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true" style="display: none;"></span>Save';
 							if (data.success) {
 								
 								const modal =
@@ -160,7 +160,7 @@
 							spinner.style.display = "none";
 							submitButton.disabled = false;
 							submitButton.innerHTML =
-								'<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true" style="display: none;"></span>Insert';
+								'<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true" style="display: none;"></span>Save';
 							$.notify(
 								{
 									type: "danger",

@@ -3,7 +3,7 @@
     <div id="content" class="app-content">
 
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/faculty/classes">MANAGE CLASSES</a></li>
+            <li class="breadcrumb-item"><a href="/faculty/class">MANAGE CLASSES</a></li>
         </ol>
         <h1 class="page-header">
             Manage Classes <small>overview &amp; actions</small>
@@ -18,14 +18,14 @@
 
                         <div class="card-body">
                             <h5 class="card-title">
-                                Class Name: <%= classItem.class_name %>
+                                Class Section: <%= classItem.class_name %>
                             </h5>
 
                             <p class="card-text">Room Number: <%= classItem.room_number %> <br>
 
                                 
 
-                                        Subject Name: <%= classItem.subject_name %> <br>
+                                        Subject Title: <%= classItem.subject_name %> <br>
                                         Description: <%= classItem.description %> <br>
                                         Academic Year: <%= classItem.academic_year %> <br>
                                         Time/Day: <%= classItem.time_day %> <br>
@@ -36,7 +36,7 @@
                           
                             </span>
                             <a href="/faculty/class/<%= classItem.class_id %>" class="btn btn-primary btn-sm">View Class</a>
-                            
+                            <a href="/faculty/record-attendance?class_id=<%= classItem.class_id %>" class="btn btn-primary btn-sm">Record Attendance</a>
                         </div>
 
                     </div>

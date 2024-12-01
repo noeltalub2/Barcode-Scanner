@@ -147,5 +147,79 @@
             </div>
            
         </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card mb-3 flex-1">
+                    <!-- BEGIN card-body -->
+                    <div class="card-body">
+                        <div class="d-flex mb-3">
+                            <div class="flex-grow-1">
+                                <h5 class="mb-1">Recent Faculty Registration</h5>
+                                <div>Store user account registration <span>     <a href="/admin/faculty">View All</a></span></div>
+                           
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                             <!-- Table of Faculty -->
+                             <table class="table table-bordered" id="facultyTable">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Name</th>
+                                        <th>Username</th>
+                                        <th>Email</th>
+                                    
+                                        <th>Registration Status</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+   
+    
+    <script>
+        var table = $("#facultyTable").DataTable({
+            processing: true,
+            ajax: {
+                url: "/admin/faculty/all/pending",
+                type: "GET",
+            },
+            columns: [
+    { 'data': 'id' },
+    { 'data': 'name' },
+    { 'data': 'username' },
+    { 'data': 'email' }, // For demonstration; avoid displaying passwords in production.
+ 
+    {
+        'data': 'registration_status',
+        'render': function (data) {
+            let badgeClass = '';
+            let badgeText = '';
+            
+            // Set badge class and text based on registration status
+            if (data === 'pending') {
+                badgeClass = 'bg-warning'; // Yellow badge for pending
+                badgeText = 'Pending';
+            } else if (data === 'approved') {
+                badgeClass = 'bg-success'; // Green badge for approved
+                badgeText = 'Approved';
+            } else if (data === 'rejected') {
+                badgeClass = 'bg-danger'; // Red badge for rejected
+                badgeText = 'Rejected';
+            }
+            
+            return `<span class="badge ${badgeClass}">${badgeText}</span>`;
+        }
+    }
+    
+]
+
+        });
+    </script>
+
 

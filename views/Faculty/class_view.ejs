@@ -28,14 +28,14 @@
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-body">
-                        <p class="mb-0"><strong>Class Name:</strong>
+                        <p class="mb-0"><strong>Class Section:</strong>
                             <%= class_info.class_name %>
                         </p>
                         <p class="mb-0"><strong>Room Number:</strong>
                             <%= class_info.room_number %>
                         </p>
 
-                        <p class="mb-0"><strong>Subject Name:</strong>
+                        <p class="mb-0"><strong>Subject Title:</strong>
                             <%= class_info.subject_name %>
                         </p>
 
@@ -274,10 +274,14 @@
                                         <input class="form-control" type="text" name="student_id" id="student_id"
                                             required>
                                         <div id="error-upload-message" class="mt-2"></div>
-                                        <button type="submit" class="btn btn-primary" id="submit-button">Save
-                                            <span class="spinner-border spinner-border-sm" role="status"
-                                                aria-hidden="true" style="display: none;"></span>
-                                        </button>
+                                        <div class="d-flex justify-content-end mt-3">
+                                            <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-primary" id="submit-button">Save
+                                                <span class="spinner-border spinner-border-sm" role="status"
+                                                    aria-hidden="true" style="display: none;"></span>
+                                            </button>
+                                        </div>
+                                  
                                     </div>
                                 </form>
                             </div>
@@ -307,10 +311,16 @@
                                                 accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
                                                 class="form-control" required>
                                             <div id="error-upload-message-2" class="mt-2"></div>
-                                            <button type="submit" class="btn btn-success mt-2" id="upload-button">
-                                                <span class="spinner-border spinner-border-sm" role="status"
-                                                    aria-hidden="true" style="display: none;"></span> Upload
-                                            </button>
+
+                                            <div class="d-flex justify-content-end mt-3">
+                                                <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Close</button>
+                                                <button type="submit" class="btn btn-success " id="upload-button">
+                                                    <span class="spinner-border spinner-border-sm" role="status"
+                                                        aria-hidden="true" style="display: none;"></span> Upload
+                                                </button>
+                                            </div>
+
+                                           
                                         </form>
                                     </div>
                                 </div>
@@ -318,10 +328,7 @@
                         </div>
                     </div>
 
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-
-                    </div>
+                   
                 </div>
 
             </div>

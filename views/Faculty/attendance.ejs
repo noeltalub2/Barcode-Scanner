@@ -128,7 +128,8 @@
 
 
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/admin/record-attendance">ATTENDANCE</a></li>
+            <li class="breadcrumb-item"><a href="/faculty/class">MANAGE CLASSES</a></li>
+            <li class="breadcrumb-item active">RECORD ATTENDANCE</a></li>
         </ol>
         <h1 class="page-header">
             Record Attendance <small>overview</small>
@@ -216,28 +217,16 @@
                                                 <label for="present" class="radio-tile-label">Present</label>
                                             </div>
                                         </div>
-                                        <div class="input-container">
-                                            <input id="absent" class="radio-button" type="radio" name="attendance"
-                                                value="Absent" />
-                                            <div class="radio-tile">
-                                                <label for="absent" class="radio-tile-label">Absent</label>
-                                            </div>
-                                        </div>
+                                      
                                     </div>
 
 
                                 </div>
-                                <div class="mt-3">
-                                    <select id="class_select_id" class="form-select">
-                                        <option value="" hidden>Select Class</option>
-                                        <% class_records.forEach(classItem=> { %>
-                                            <option value="<%= classItem.class_id %>">
-                                                <%= classItem.class_name %> - Room <%= classItem.room_number %> (<%=
-                                                            classItem.subject_name %>)
-                                            </option>
-                                            <% }); %>
-                                    </select>
-
+                                <div class="mt-3 text-center">
+                                    <h3>
+                                        Class Name: <%=class_records[0].class_name%>
+                                    </h3>
+                                   
                                 </div>
                             </div>
                         </div>
@@ -268,56 +257,25 @@
         // Variables for storing attendance type and last scan result
         let attendance_type = "";
         let lastResult = "";
-        let selectedValue; // This will hold the selected class_id
-        let table; // Declare table variable to hold DataTable instance
+        let selectedValue = '<%-class_id%>'; // This will hold the selected class_id
+    
 
-        // Function to initialize DataTable
-        function initializeDataTable(class_id) {
-            // Initialize DataTable with the class_id only if it hasn't been initialized
-            if (!$.fn.dataTable.isDataTable('#attendanceTable')) {
-                table = $("#attendanceTable").DataTable({
-                    processing: true,
-
-                    ajax: {
-                        url: `/faculty/attendance/class/${class_id}`, // Update this URL with the specific class_id
-                        type: "GET",
-                    },
-                    columns: [
-                        { data: 'attendance_id' },
-                        { data: 'student_id' },
-                        { data: 'name' },
-                        { data: 'log_date' },
-                        { data: 'status' },
-                        { data: 'logs' },
-                        // You can include more columns based on your database fields
-                    ],
-                 
-                });
-            } else {
-                // If the DataTable is already initialized, just update the URL and reload the data
-                table.ajax.url(`/faculty/attendance/class/${class_id}`).load(); // Update the URL and reload data
-            }
-        }
-
-        // Get elements from the DOM
-        const barcodeData = document.getElementById('barcodeData');
-        const classSelect = document.getElementById('class_select_id');
-
-        // Event listener for class selection change
-        classSelect.addEventListener('change', function () {
-            selectedValue = this.value; // Update the variable with the selected value
-
-            if (selectedValue) { // Ensure the selected value is not empty or undefined
-                initializeDataTable(selectedValue); // Initialize or update the DataTable
-                barcodeData.focus(); // Set focus back to barcode input
-            }
+        const table = $("#attendanceTable").DataTable({
+            processing: true,
+            ajax: {
+                url: `/faculty/attendance/class/${<%-class_id%>}`, // Update this URL with the specific class_id
+                type: "GET",
+            },
+            columns: [
+                { data: 'attendance_id' },
+                { data: 'student_id' },
+                { data: 'name' },
+                { data: 'log_date' },
+                { data: 'status' },
+                { data: 'logs' },
+                // You can include more columns based on your database fields
+            ],
         });
-
-        // Optional: Initialize the DataTable with a default value if needed
-        if (classSelect.value) {
-            selectedValue = classSelect.value; // Get the default selected value
-            initializeDataTable(selectedValue); // Initialize the DataTable
-        }
 
 
 

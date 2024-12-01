@@ -92,6 +92,13 @@ router.get(
 );
 
 router.get(
+	"/faculty/all/pending",
+	auth.requireAuth,
+	auth.checkRole(["admin"]),
+	adminController.getAllFacultyPending // Adjust the controller method name
+);
+
+router.get(
 	"/faculty/:id",
 	auth.requireAuth,
 	auth.checkRole(["admin"]),

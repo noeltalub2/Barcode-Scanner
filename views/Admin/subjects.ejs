@@ -26,7 +26,7 @@
                             <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Subject Name</th>
+                                    <th>Subject Title</th>
                                     <th>Subject Code</th>
                                     <th>Description</th>
                                     <th>Semester</th>
@@ -74,7 +74,7 @@
                         <div class="col-lg-12" id="singleDataForm">
                             <form class="add-subject-validation" method="POST">
                             <div class="mb-2">
-                                <label for="subjectName" class="form-label">Subject Name</label>
+                                <label for="subjectName" class="form-label">Subject Title</label>
                                 <input class="form-control" type="text" name="subject_name" id="subjectName" required autofocus>
                             </div>
                             <div class="mb-2">
@@ -91,12 +91,25 @@
                                     <option value="">Select Semester</option>
                                     <option value="1st">1st Semester</option>
                                     <option value="2nd">2nd Semester</option>
+                                    <option value="Midyear">Midyear</option>
                                 </select>
                             </div>
+                            
                             <div class="mb-2">
                                 <label for="academicYear" class="form-label">A.Y.</label>
-                                <input class="form-control" type="text" name="academic_year" id="academicYear" placeholder="e.g., 2023-2024" required>
+                                <select class="form-control" name="academic_year" id="academicYear" required>
+                                    <% 
+                                        const currentYear = new Date().getFullYear(); // Get the current year
+                                        for (let i = 2020; i <= 2028; i++) { 
+                                            const academicYear = `${i}-${i + 1}`;
+                                    %>
+                                        <option value="<%= academicYear %>" <%= i === currentYear ? 'selected' : '' %>>
+                                            <%= academicYear %>
+                                        </option>
+                                    <% } %>
+                                </select>
                             </div>
+                            
                             <div class="mb-2">
                                 <label for="timeDay" class="form-label">Time/Day</label>
                                 <input class="form-control" type="text" name="time_day" id="timeDay" placeholder="e.g., Mon-Wed 10:00AM - 11:30AM" required>
@@ -109,9 +122,14 @@
                                     <option value="Lab">Lab</option>
                                 </select>
                             </div>
-                            <button type="submit" class="btn btn-primary" id="submit-button">Save
-                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
-                            </button>
+
+                            <div class="d-flex justify-content-end mt-3">
+                                <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary" id="submit-button">Save
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+                                </button>
+                            </div>
+                      
                         </form>
                         </div>
 
@@ -121,7 +139,7 @@
                                 <p><strong>How to Use:</strong></p>
                                 <ul>
                                     <li>Download the <a href="/document/sample_template_subjects.xlsx" download>sample template</a>.</li>
-                                    <li>Ensure each row corresponds to a record, with columns like "Subject Name," "Subject Code," "Description," "Semester," "A.Y.," "Time/Day," and "Type".</li>
+                                    <li>Ensure each row corresponds to a record, with columns like "Subject Title," "Subject Code," "Description," "Semester," "A.Y.," "Time/Day," and "Type".</li>
                                     <li>Save the file in .xlsx format and upload it here.</li>
                                 </ul>
                                 <div class="excel-img-container text-center mt-2">
@@ -135,9 +153,14 @@
                                                accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
                                                class="form-control" required>
                                         <div id="error-upload-message" class="mt-2"></div>
-                                        <button type="submit" class="btn btn-success mt-2" id="upload-button">
-                                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span> Upload
-                                        </button>
+
+                                        <div class="d-flex justify-content-end mt-3">
+                                            <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-success" id="upload-button">
+                                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span> Upload
+                                            </button>
+                                        </div>
+                                   
                                     </form>
                                 </div>
                             </div>
@@ -145,12 +168,7 @@
 
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary" id="submit-button">Save
-                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
-                    </button>
-                </div>
+              
             </div>
    
     </div>
@@ -171,7 +189,7 @@
                     <input type="hidden" name="subject_id" id="edit-subject-id">
                     
                     <div class="mb-2">
-                        <label for="edit-subject-name" class="form-label">Subject Name</label>
+                        <label for="edit-subject-name" class="form-label">Subject Title</label>
                         <input class="form-control" type="text" name="subject_name" id="edit-subject-name" required>
                     </div>
                     
@@ -191,13 +209,25 @@
                             <option value="">Select Semester</option>
                             <option value="1st">1st Semester</option>
                             <option value="2nd">2nd Semester</option>
+                            <option value="Midyear">Midyear</option>
                         </select>
                     </div>
                     
                     <div class="mb-2">
                         <label for="edit-academic-year" class="form-label">A.Y.</label>
-                        <input class="form-control" type="text" name="academic_year" id="edit-academic-year" placeholder="e.g., 2023-2024" required>
+                        <select class="form-control" name="academic_year" id="edit-academic-year" required>
+                            <% 
+
+                                for (let i = 2020; i <= 2028; i++) { 
+                                    const academicYear2 = `${i}-${i + 1}`;
+                            %>
+                                <option value="<%= academicYear2 %>">
+                                    <%= academicYear2 %>
+                                </option>
+                            <% } %>
+                        </select>
                     </div>
+                    
                     
                     <div class="mb-2">
                         <label for="edit-time-day" class="form-label">Time/Day</label>

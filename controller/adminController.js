@@ -261,6 +261,26 @@ const getAllFaculty = async (req, res) => {
 	res.json({ data: resultData });
 };
 
+const getAllFacultyPending = async (req, res) => {
+	const faculty_record = await query("SELECT * FROM faculty WHERE registration_status = 'pending'");
+	var resultData = [];
+
+	faculty_record.forEach((data, index) => {
+		resultData.push({
+			id: index + 1,
+			faculty_id: data.id,
+			name: data.name,
+			username: data.username,
+			email: data.email,
+			profile_url: data.profile_url,
+			is_active: data.is_active,
+			registration_status: data.registration_status
+		});
+	});
+
+	res.json({ data: resultData });
+};
+
 const postAddFaculty = async (req, res) => {
 	const { name, username, email, password } = req.body;
 	try {
@@ -300,13 +320,16 @@ const postFacultyEdit = async (req, res) => {
 	const { id, name, username, email, password, is_active, registration_status } = req.body;
 
 	try {
+		
 		// Construct the query based on whether the password is provided or not
 		let query_result;
+		
 		if (password) {
+			const hashedPassword = await bcrypt.hash(password, 10);
 			// Update with the password if provided
 			query_result = await query(
-				"UPDATE faculty SET name = ?, username = ?, email = ?,is_active = ?, registration_status = ? password = ? WHERE id = ? ",
-				[name, username, email,is_active, registration_status, password, id]
+				"UPDATE faculty SET name = ?, username = ?, email = ?,is_active = ?, registration_status = ?, password = ? WHERE id = ? ",
+				[name, username, email,is_active, registration_status, hashedPassword, id]
 			);
 		} else {
 			// Update without changing the password
@@ -772,6 +795,7 @@ export default {
 	deleteStudent,
 	getFaculty,
 	getAllFaculty,
+	getAllFacultyPending,
 	postAddFaculty,
 	getFacultyView,
 	postFacultyEdit,

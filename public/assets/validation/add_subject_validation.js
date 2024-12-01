@@ -22,8 +22,7 @@
                     },
                     academic_year: {
                         required: true,
-                        minlength: 4,
-                        maxlength: 9, // Example: "2023-2024"
+                     
                     },
                     time_day: {
                         required: true,
@@ -50,8 +49,7 @@
                     },
                     academic_year: {
                         required: "Please enter the academic year",
-                        minlength: "Please enter a valid academic year (e.g., 2023-2024)",
-                        maxlength: "Academic year should be in 'YYYY-YYYY' format",
+                   
                     },
                     time_day: {
                         required: "Please specify the time/day",
@@ -78,7 +76,7 @@
                     .then((data) => {
                         spinner.style.display = "none";
                         submitButton.disabled = false;
-                        submitButton.innerHTML = 'Insert <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>';
+                        submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>Save';
                         if (data.success) {
                             const modal = document.querySelector("#addSubject"); // Updated to correct modal ID
                             if (modal) {
@@ -111,7 +109,7 @@
                     .catch((error) => {
                         spinner.style.display = "none";
                         submitButton.disabled = false;
-                        submitButton.innerHTML = 'Insert <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>';
+                        submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>Save';
                         $.notify({
                             type: "danger",
                             icon: "fa fa-times-circle me-1",
