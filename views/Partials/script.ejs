@@ -8,5 +8,22 @@
 <script src="/assets/validation/add_subject_validation.js"></script>
 <script src="/assets/validation/edit_subject_validation.js"></script>
 
-
 <script src="/assets/validation/edit_class_validation.js"></script>
+<script>
+function logoutPopout() {
+    Swal.fire({
+        title: "Are you sure you want to logout?",
+        text: "Please confirm",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, logout!"
+    }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = "/logout"
+        }
+    });
+}
+
+</script>

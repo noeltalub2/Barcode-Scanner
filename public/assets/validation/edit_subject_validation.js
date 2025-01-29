@@ -7,11 +7,11 @@
                 rules: {
                     subject_name: {
                         required: true,
-                        minlength: 2,
+                     
                     },
                     subject_code: {
                         required: true,
-                        minlength: 3,
+                      
                     },
                     description: {
                         required: true,
@@ -34,11 +34,11 @@
                 messages: {
                     subject_name: {
                         required: "Please enter the subject name",
-                        minlength: "The subject name must consist of at least 2 characters",
+                 
                     },
                     subject_code: {
                         required: "Please enter a subject code",
-                        minlength: "The subject code must consist of at least 3 characters",
+                     
                     },
                     description: {
                         required: "Please provide a description",
